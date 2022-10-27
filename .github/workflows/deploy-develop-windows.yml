@@ -25,4 +25,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.run_number }}
-          artifcats: "D:\\a\\figure-drawing\\figure-drawing\\installer\\Figure Drawing.exe"
+          artifacts: "D:\\a\\figure-drawing\\figure-drawing\\installer\\Figure Drawing.exe"
