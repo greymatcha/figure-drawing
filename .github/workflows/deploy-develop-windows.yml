@@ -24,4 +24,4 @@ jobs:
       - uses: softprops/action-gh-release@v1
         with:
           name: "Figure Drawing V${{ github.run_number }}"
-          files: "D:\a\figure-drawing\figure-drawing\installer\Figure Drawing.exe"
+          files: "D:\\a\\figure-drawing\\figure-drawing\\installer\\Figure Drawing.exe"
