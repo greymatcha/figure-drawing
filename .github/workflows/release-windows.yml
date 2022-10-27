@@ -1,4 +1,4 @@
-name: Deployment develop windows
+name: Deployment windows
 on:
   push:
     branches: [main]
@@ -9,23 +9,27 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: 'beta'
-      - run: flutter config --enable-windows-desktop
-      - run: flutter build windows
-      - run: |
+      - name: Enable flutter windows desktop support
+        run: flutter config --enable-windows-desktop
+      - name: Build the flutter application for windows
+        run: flutter build windows
+      - name: Download Inno Setup
+        run: |
           Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "D:\a\figure-drawing\is.exe"
-      - run: |
+      - name: Install Inno Setup
+        run: |
           D:\a\figure-drawing\is.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="D:\a\figure-drawing\inno-setup"
-      - run: |
+      - name: Create an installer for the flutter application
+        run: |
           D:\a\figure-drawing\inno-setup\ISCC.exe  /DMyAppVersion=${{ github.run_number }} 'D:\a\figure-drawing\figure-drawing\installer\windows_install_script.iss'
-      - run: |
-          echo ${{ github.workspace }}
-      - run: |
-          ls 'D:/a/figure-drawing/figure-drawing/installer/'
-      - uses: ncipollo/release-action@v1
+      - name: Create a release with the installer as an artifact
+        uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: v0.${{ github.run_number }}
