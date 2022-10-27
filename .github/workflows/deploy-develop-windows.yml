@@ -20,6 +20,6 @@ jobs:
       - run: |
           Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "D:\a\figure-drawing\is.exe"
       - run: |
-          "D:\a\figure-drawing\is.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="D:\a\figure-drawing\inno-setup"
+          D:\a\figure-drawing\is.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="D:\a\figure-drawing\inno-setup"
       - run: |
           ls "D:\a\figure-drawing\inno-setup"
