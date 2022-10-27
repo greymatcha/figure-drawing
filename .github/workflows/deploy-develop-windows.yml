@@ -25,8 +25,8 @@ jobs:
           TAKEOWN /F D:\a\figure-drawing\figure-drawing\installer
       - run: |
           D:\a\figure-drawing\inno-setup\ISCC.exe  /DMyAppVersion=${{ github.run_number }} 'D:\a\figure-drawing\figure-drawing\installer\windows_install_script.iss'
-      - uses: ncipollo/release-action@v1
-        with:
-          artifacts: "D:\a\figure-drawing\figure-drawing\installer\Figure Drawing.exe"
-          name: "Figure Drawing V${{ github.run_number }}"
-          token: ${{ secrets.GH_TOKEN }}
+      # - uses: ncipollo/release-action@v1
+      #   with:
+      #     artifacts: "D:\a\figure-drawing\figure-drawing\installer\Figure Drawing.exe"
+      #     name: "Figure Drawing V${{ github.run_number }}"
+      #     token: ${{ secrets.GH_TOKEN }}
