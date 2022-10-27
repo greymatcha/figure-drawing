@@ -4,6 +4,18 @@ import 'dart:async' as async;
 
 import 'package:figure_drawing/classes.dart' as classes;
 
+class MenuState {
+  bool fileInfo;
+  bool showGrid;
+  bool flipImage;
+  bool blackWhite;
+  bool showTimer;
+
+  MenuState(this.fileInfo, this.showGrid, this.flipImage, this.blackWhite, this.showTimer);
+}
+enum MenuItems { fileInfo, showGrid, flipImage, blackWhite, showTimer }
+
+
 class DisplayPage extends StatefulWidget {
   final List<String> imagePaths;
   final classes.UserSettings userSettings;
@@ -22,6 +34,9 @@ class _DisplayPageState extends State<DisplayPage> {
   late async.Timer _timer;
   int _start = 0;
   bool timerIsPaused = true;
+
+  MenuState menuState = MenuState(false, false, false, false, true);
+
 
   void startTimer() {
     // Prevent multiple timers being created
@@ -85,7 +100,38 @@ class _DisplayPageState extends State<DisplayPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Figure drawing'),
-        actions: <Widget> [],
+        actions: <Widget> [
+          PopupMenuButton<MenuItems>(
+            // Callback that sets the selected popup menu item.
+            onSelected: (MenuItems item) {
+              setState(() {
+                print(item);
+              });
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuItems>>[
+              const PopupMenuItem<MenuItems>(
+                value: MenuItems.fileInfo,
+                child: Text('Item 1'),
+              ),
+              const PopupMenuItem<MenuItems>(
+                value: MenuItems.showGrid,
+                child: Text('Item 2'),
+              ),
+              const PopupMenuItem<MenuItems>(
+                value: MenuItems.flipImage,
+                child: Text('Item 3'),
+              ),
+              const PopupMenuItem<MenuItems>(
+                value: MenuItems.blackWhite,
+                child: Text('Item 4'),
+              ),
+              const PopupMenuItem<MenuItems>(
+                value: MenuItems.showTimer,
+                child: Text("Item 5"),
+              )
+            ]
+          ),
+        ],
       ),
       body: Center(
         child: Column (
@@ -97,11 +143,12 @@ class _DisplayPageState extends State<DisplayPage> {
                       io.File(widget.imagePaths[currentIndex]),
                       fit: BoxFit.contain,
                     ),
-                    Positioned(
-                      top: 12,
-                      right: 12,
-                      child: Text("$_start")
-                    )
+                    menuState.showTimer ?
+                      Positioned(
+                        top: 12,
+                        right: 12,
+                        child: Text("$_start")
+                      ) : const Center()
                   ],
                 ),
             ),
