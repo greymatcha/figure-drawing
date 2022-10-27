@@ -21,12 +21,21 @@ class _DisplayPageState extends State<DisplayPage> {
   int currentIndex = 0;
   late async.Timer _timer;
   int _start = 0;
+  bool timerIsPaused = true;
 
   void startTimer() {
+    // Prevent multiple timers being created
+    if (!timerIsPaused) {
+      return;
+    }
+
+    setState(() {
+      timerIsPaused = false;
+    });
     const oneSec = Duration(seconds: 1);
     _timer = async.Timer.periodic(
       oneSec,
-          (async.Timer timer) {
+      (async.Timer timer) {
         if (_start == 0) {
           if (currentIndex < widget.imagePaths.length - 1) {
             setState(() {
@@ -45,6 +54,13 @@ class _DisplayPageState extends State<DisplayPage> {
         }
       },
     );
+  }
+
+  void pauseTimer() {
+    setState(() {
+      timerIsPaused = true;
+      _timer.cancel();
+    });
   }
 
   @override
@@ -68,7 +84,8 @@ class _DisplayPageState extends State<DisplayPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Figure drawing')
+        title: const Text('Figure drawing'),
+        actions: <Widget> [],
       ),
       body: Center(
         child: Column (
@@ -101,6 +118,19 @@ class _DisplayPageState extends State<DisplayPage> {
                       }
                     }
                 ),
+                timerIsPaused ?
+                  ElevatedButton(
+                      child: Text("Continue"),
+                      onPressed: () {
+                        startTimer();
+                      }
+                  ) :
+                  ElevatedButton(
+                      child: Text("Pause"),
+                      onPressed: () {
+                        pauseTimer();
+                      }
+                  ),
                 ElevatedButton(
                     child: const Text("Next"),
                     onPressed: () {
