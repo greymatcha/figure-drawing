@@ -1,0 +1,32 @@
+name: Deployment develop windows
+on:
+  push:
+    branches: [main]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'beta'
+      - run: flutter config --enable-windows-desktop
+      - run: flutter build windows
+      - run: |
+          Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "D:\a\figure-drawing\is.exe"
+      - run: |
+          D:\a\figure-drawing\is.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="D:\a\figure-drawing\inno-setup"
+      - run: |
+          D:\a\figure-drawing\inno-setup\ISCC.exe  /DMyAppVersion=${{ github.run_number }} 'D:\a\figure-drawing\figure-drawing\installer\windows_install_script.iss'
+      - run: |
+          echo ${{ github.workspace }}
+      - run: |
+          ls 'D:/a/figure-drawing/figure-drawing/installer/'
+      - uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: v0.${{ github.run_number }}
+          artifacts: "${{ github.workspace }}/installer/FigureDrawingInstaller.exe"
