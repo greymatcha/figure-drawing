@@ -21,8 +21,12 @@ jobs:
           D:\a\figure-drawing\is.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="D:\a\figure-drawing\inno-setup"
       - run: |
           D:\a\figure-drawing\inno-setup\ISCC.exe  /DMyAppVersion=${{ github.run_number }} 'D:\a\figure-drawing\figure-drawing\installer\windows_install_script.iss'
+      - run: |
+          echo ${{ github.workspace }}
+      - run: |
+          ls 'D:/a/figure-drawing/figure-drawing/installer/'
       - uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.run_number }}
-          artifacts: "D:\\a\\figure-drawing\\figure-drawing\\installer\\Figure Drawing.exe"
+          tag: v${{ github.run_number }}
+          artifacts: "${{ github.workspace }}/installer/Figure Drawing.exe"
