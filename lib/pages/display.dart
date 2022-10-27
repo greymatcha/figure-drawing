@@ -17,7 +17,7 @@ class _DisplayPageState extends State<DisplayPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Draw!')
+        title: const Text('Figure drawing')
       ),
       body: Center(
         child: Column (
@@ -33,7 +33,6 @@ class _DisplayPageState extends State<DisplayPage> {
               children: <Widget>[
                 ElevatedButton(
                     child: const Text("Previous"),
-                    
                     onPressed: () {
                       if (currentIndex > 0) {
                         setState(() {

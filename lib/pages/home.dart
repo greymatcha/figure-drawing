@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'dart:io' as io;
 
 import 'package:figure_drawing/pages/display.dart';
+import 'package:figure_drawing/utilities/utilities.dart' as utilities;
 
 class HomePage extends StatefulWidget {
   @override
@@ -16,7 +16,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Figure Drawing'),
+        title: const Text('Figure drawing'),
       ),
       body: Center(
         child: ElevatedButton(
@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
           onPressed: () async {
             String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
             if (selectedDirectory != null) {
-              List <String> imagePaths = getImagesInDirectoryRecursive(selectedDirectory);
+              List <String> imagePaths = utilities.getImagesInDirectoryRecursive(selectedDirectory);
 
               if (!mounted) return;
 
@@ -40,23 +40,4 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-List <String> getImagesInDirectoryRecursive(String directory, {int currentDepth = 0}) {
-  List <String> result = [];
 
-  // Safeguard to make sure we don't infinitely search through files
-  if (currentDepth > 7) {
-    debugPrint("Max search depth reached");
-    return result;
-  }
-
-  List <io.FileSystemEntity> elementList = io.Directory(directory).listSync();
-  for (var i = 0; i < elementList.length; i++) {
-    var element = elementList[i];
-    if (io.FileSystemEntity.isDirectorySync(element.path)) {
-      result = [...result, ...getImagesInDirectoryRecursive(element.path, currentDepth: currentDepth + 1)];
-    } else {
-      result.add(element.path);
-    }
-  }
-  return result;
-}
