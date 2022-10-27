@@ -10,15 +10,16 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-      - run: |
-          cd ..
-          Rename-Item "D:\a\figure-drawing\figure-drawing" -NewName "figure_drawing"
-          cd .\figure_drawing\
+      # - run: |
+      #     cd ..
+      #     Rename-Item "D:\a\figure-drawing\figure-drawing" -NewName "figure_drawing"
+      #     cd .\figure_drawing\
       - uses: subosito/flutter-action@v2
         with:
           channel: 'beta'
-      - run: flutter pub get
-      - run: flutter create --platforms=windows .
+      # - run: flutter pub get
+      # - run: flutter create --platforms=windows .
+      - run: flutter config --enable-windows-desktop
       - run: flutter build windows
       - run: |
           Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "D:\a\figure-drawing\is.exe"
