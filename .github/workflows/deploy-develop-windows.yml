@@ -10,14 +10,14 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'beta'
+      # - uses: subosito/flutter-action@v2
+      #   with:
+      #     channel: 'beta'
       # - run: flutter pub get
       # - run: flutter analyze
       # - run: flutter config --enable-windows-desktop
       # - run: flutter build windows
       - run: |
-          cd
+          $pwd
       - run: |
           ls
