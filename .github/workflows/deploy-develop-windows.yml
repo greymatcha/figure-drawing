@@ -14,8 +14,7 @@ jobs:
         with:
           channel: 'beta'
       - run: flutter pub get
-      - run: flutter analyze
-      - run: flutter config --enable-windows-desktop
+      - run: flutter create --platforms=windows
       - run: flutter build windows
       - run: |
           Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "D:\a\figure-drawing\is.exe"
