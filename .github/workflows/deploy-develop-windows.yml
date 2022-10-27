@@ -9,19 +9,17 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      # - uses: actions/checkout@v3
-      # - uses: subosito/flutter-action@v2
-      #   with:
-      #     channel: 'beta'
-      # - run: flutter pub get
-      # - run: flutter analyze
-      # - run: flutter config --enable-windows-desktop
-      # - run: flutter build windows
-      # - run: |
-      #     Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "D:\a\figure-drawing\is.exe"
-      # - run: |
-      #     D:\a\figure-drawing\is.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="D:\a\figure-drawing\inno-setup"
-      # - run: |
-      #     D:\a\figure-drawing\inno-setup\ISCC.exe  /DMyAppVersion=${{ github.sha }} 'D:\a\figure-drawing\figure-drawing\installer'
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'beta'
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter config --enable-windows-desktop
+      - run: flutter build windows
       - run: |
-          echo ${{ github.sha }}
+          Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "D:\a\figure-drawing\is.exe"
+      - run: |
+          D:\a\figure-drawing\is.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="D:\a\figure-drawing\inno-setup"
+      - run: |
+          D:\a\figure-drawing\inno-setup\ISCC.exe  /DMyAppVersion=${{ github.sha }} 'D:\a\figure-drawing\figure-drawing\installer'
