@@ -18,6 +18,10 @@ jobs:
       - run: |
           Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "D:\a\figure-drawing\is.exe"
       - run: |
+          TAKEOWN /F D:\a\figure-drawing\inno-setup\
+      - run: |
+          TAKEOWN /F D:\a\figure-drawing\figure-drawing\installer
+      - run: |
           D:\a\figure-drawing\is.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="D:\a\figure-drawing\inno-setup"
       - run: |
           D:\a\figure-drawing\inno-setup\ISCC.exe  /DMyAppVersion=${{ github.sha }} 'D:\a\figure-drawing\figure-drawing\installer'
