@@ -10,6 +10,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
+      - run: |
+          cd ..
+          Rename-Item "D:\a\figure-drawing\figure-drawing" -NewName "figure_drawing"
+          cd .\figure_drawing\
       - uses: subosito/flutter-action@v2
         with:
           channel: 'beta'
