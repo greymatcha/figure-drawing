@@ -4,7 +4,7 @@
 #define MyAppName "Figure Drawing"
 #define MyAppPublisher "Grey Matcha"
 #define MyAppURL "https://github.com/greymatcha/figure-drawing"
-#define MyAppExeName "figure_drawing.exe"
+#define MyAppExeName "figure-drawing.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -21,9 +21,9 @@ DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-OutputDir=D:\a\figure-drawing\figure_drawing\installer
+OutputDir=D:\a\figure-drawing\figure-drawing\installer
 OutputBaseFilename=Figure Drawing Installer
-SetupIconFile=D:\a\figure-drawing\figure_drawing\installer\icon.ico
+SetupIconFile=D:\a\figure-drawing\figure-drawing\installer\icon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -35,9 +35,9 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\a\figure-drawing\figure_drawing\build\windows\runner\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\a\figure-drawing\figure_drawing\build\windows\runner\Release\flutter_windows.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\a\figure-drawing\figure_drawing\build\windows\runner\Release\data\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\a\figure-drawing\figure-drawing\build\windows\runner\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\a\figure-drawing\figure-drawing\build\windows\runner\Release\flutter_windows.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\a\figure-drawing\figure-drawing\build\windows\runner\Release\data\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
