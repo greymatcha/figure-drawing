@@ -18,6 +18,8 @@ jobs:
       # - run: flutter config --enable-windows-desktop
       # - run: flutter build windows
       - run: |
-          $pwd
+          Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "D:\a\figure-drawing\is.exe"
       - run: |
-          ls
+          "D:\a\figure-drawing\is.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="D:\a\figure-drawing\inno-setup"
+      - run: |
+          ls "D:\a\figure-drawing\inno-setup"
