@@ -4,7 +4,7 @@
 #define MyAppName "Figure Drawing"
 #define MyAppPublisher "Grey Matcha"
 #define MyAppURL "https://github.com/greymatcha/figure-drawing"
-#define MyAppExeName "figure-drawing.exe"
+#define MyAppExeName "figure_drawing.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
