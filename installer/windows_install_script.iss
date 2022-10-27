@@ -22,7 +22,7 @@ DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir=D:\a\figure-drawing\figure-drawing\installer
-OutputBaseFilename=Figure Drawing Installer
+OutputBaseFilename=FigureDrawingInstaller
 SetupIconFile=D:\a\figure-drawing\figure-drawing\installer\icon.ico
 Compression=lzma
 SolidCompression=yes
