@@ -243,8 +243,8 @@ class _DisplayPageState extends State<DisplayPage> {
                       top: 12,
                       right: 12,
                       child: menuState.showTimer ?
-                          Text("$_start") :
-                          const SizedBox.shrink(),
+                        Text("$_start") :
+                        const SizedBox.shrink(),
                     ),
                   ],
                 ),
