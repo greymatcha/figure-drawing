@@ -147,10 +147,6 @@ class _DisplayPageState extends State<DisplayPage> {
               });
             },
             itemBuilder: (BuildContext context) => <PopupMenuItem<MenuItems>>[
-              const PopupMenuItem<MenuItems>(
-                value: MenuItems.fileInfo,
-                child: Text('File information'),
-              ),
               PopupMenuItem<MenuItems>(
                   value: MenuItems.flipImage,
                   child: Row(
