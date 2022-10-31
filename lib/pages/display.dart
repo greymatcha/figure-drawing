@@ -17,11 +17,11 @@ enum MenuItems { fileInfo, showGrid, flipImage, blackWhite, showTimer }
 
 class DisplayPage extends StatefulWidget {
   final List<String> imagePaths;
-  final classes.UserSettings userSettings;
+  final List<classes.SessionItem> session;
 
   const DisplayPage({
     required this.imagePaths,
-    required this.userSettings
+    required this.session
   });
 
   @override
@@ -29,31 +29,37 @@ class DisplayPage extends StatefulWidget {
 }
 
 class _DisplayPageState extends State<DisplayPage> {
-  int currentIndex = 0;
-  late async.Timer _timer;
+  int _currentImageIndex = 0;
+  int _imageIndexPreviousSessions = 0;
   int _start = 0;
-  bool timerIsPaused = true;
+  bool _timerIsPaused = true;
+  bool _inBreak = false;
+  int _currentSessionItemIndex = 0;
+  async.Timer? _timer;
 
   MenuState menuState = MenuState(false, false, false, false, true);
 
   void startTimer() {
     // Prevent multiple timers being created
-    if (!timerIsPaused) {
+    if (!_timerIsPaused) {
       return;
     }
 
+    if (_timer != null && _timer!.isActive) {
+      _timer!.cancel();
+    }
+
     setState(() {
-      timerIsPaused = false;
+      _timerIsPaused = false;
     });
-    const oneSec = Duration(seconds: 1);
     _timer = async.Timer.periodic(
-      oneSec,
+      const Duration(seconds: 1),
       (async.Timer timer) {
         if (_start == 0) {
-          if (currentIndex < widget.imagePaths.length - 1) {
+          if (_currentImageIndex < widget.imagePaths.length - 1) {
             setState(() {
-              currentIndex += 1;
-              _start = widget.userSettings.timeBetweenImages;
+              _currentImageIndex += 1;
+              _start = widget.session[_currentSessionItemIndex].timeAmount as int;
             });
           } else {
             setState(() {
@@ -71,25 +77,123 @@ class _DisplayPageState extends State<DisplayPage> {
 
   void pauseTimer() {
     setState(() {
-      timerIsPaused = true;
-      _timer.cancel();
+      _timerIsPaused = true;
+      _timer?.cancel();
     });
   }
 
-  void previousImage() {
-    if (currentIndex > 0) {
-      setState(() {
-        currentIndex -= 1;
-      });
+  bool canGoToNextSession() {
+    if (_currentSessionItemIndex < widget.session.length - 1) {
+      return true;
+    }
+
+    return false;
+  }
+
+  bool canGoToPreviousSession() {
+    if (_currentSessionItemIndex <= 0) {
+      return false;
+    }
+
+    return true;
+  }
+
+  // Should only be called inside of setState()
+  void goToNextSession() {
+    _currentSessionItemIndex += 1;
+    _start = currentSessionTimeAmount();
+    if (widget.session[_currentSessionItemIndex].type == classes.SessionItemType.pause) {
+      _inBreak = true;
+    } else {
+      // TODO: Make breaks also have "0" imageAmount instead of null
+      _imageIndexPreviousSessions += (widget.session[_currentSessionItemIndex].imageAmount as int);
+      _inBreak = false;
     }
   }
 
-  void nextImage() {
-    if (currentIndex < widget.imagePaths.length - 1) {
-      setState(() {
-        currentIndex += 1;
-      });
+  void goToPreviousSession() {
+    _currentSessionItemIndex -= 1;
+    _start = currentSessionTimeAmount();
+    if (widget.session[_currentSessionItemIndex].type == classes.SessionItemType.pause) {
+      _inBreak = true;
+    } else {
+      _imageIndexPreviousSessions -= (widget.session[_currentSessionItemIndex].imageAmount as int);
+      _inBreak = false;
     }
+  }
+
+  int currentSessionTimeAmount() {
+    return (widget.session[_currentSessionItemIndex].timeAmount as int);
+  }
+
+  void goToNextImage() {
+    if (_currentImageIndex >= widget.imagePaths.length - 1) {
+      // TODO: Support case where there are no images left
+      return;
+    }
+
+    if (
+      // -1 image amount means the session goes on forever. This is used in the "simple" mode.
+      widget.session[_currentSessionItemIndex].imageAmount != -1 &&
+      // Check if we need to change session
+      (
+        widget.session[_currentSessionItemIndex].type == classes.SessionItemType.pause ||
+        _currentImageIndex - _imageIndexPreviousSessions >= (widget.session[_currentSessionItemIndex].imageAmount as int) - 1
+      )
+    ) {
+      if (canGoToNextSession()) {
+        setState(() {
+          goToNextSession();
+          if (!_inBreak) {
+            _currentImageIndex += 1;
+          }
+        });
+        startTimer();
+      } else {
+        // TODO: Handle case where we have ended the last session
+      }
+    // We are in the middle of a drawing session, go to the next image like normal
+    } else {
+      setState(() {
+        _currentImageIndex += 1;
+        _start = currentSessionTimeAmount();
+      });
+      startTimer();
+    }
+
+    print(_imageIndexPreviousSessions);
+  }
+
+  void goToPreviousImage() {
+    if (_currentImageIndex <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("This is the first image"))
+      );
+      return;
+    }
+
+    if (
+      widget.session[_currentSessionItemIndex].type == classes.SessionItemType.pause ||
+      _currentImageIndex - _imageIndexPreviousSessions < (widget.session[_currentSessionItemIndex].imageAmount as int) - 1
+    ) {
+      if (canGoToPreviousSession()) {
+        setState(() {
+          goToPreviousSession();
+
+          if (!_inBreak) {
+            _currentImageIndex -= 1;
+          }
+        });
+        startTimer();
+      }
+    } else {
+      setState(() {
+        _currentImageIndex -= 1;
+      });
+      startTimer();
+    }
+
+    print(_imageIndexPreviousSessions);
   }
 
   @override
@@ -97,7 +201,7 @@ class _DisplayPageState extends State<DisplayPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        _start = widget.userSettings.timeBetweenImages;
+        _start = widget.session[_currentSessionItemIndex].timeAmount as int;
       });
       startTimer();
     });
@@ -105,7 +209,7 @@ class _DisplayPageState extends State<DisplayPage> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -205,20 +309,22 @@ class _DisplayPageState extends State<DisplayPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Transform.scale(
-                            scaleX: menuState.flipImage ? -1 : 1,
-                            child: ColorFiltered(
-                                colorFilter:
-                                ColorFilter.mode(
-                                    menuState.blackWhite ? Colors.grey : Colors.transparent,
-                                    BlendMode.saturation
-                                ),
-                                child: Image.file(
-                                  io.File(widget.imagePaths[currentIndex]),
-                                  fit: BoxFit.contain,
-                                )
-                            )
-                        ),
+                        Expanded(
+                          child: Transform.scale(
+                              scaleX: menuState.flipImage ? -1 : 1,
+                              child: ColorFiltered(
+                                  colorFilter:
+                                  ColorFilter.mode(
+                                      menuState.blackWhite ? Colors.grey : Colors.transparent,
+                                      BlendMode.saturation
+                                  ),
+                                  child: _inBreak ? const Text("BREAK") : Image.file(
+                                    io.File(widget.imagePaths[_currentImageIndex]),
+                                    fit: BoxFit.contain,
+                                  )
+                              )
+                          ),
+                        )
                       ],
                     ),
                     Row(
@@ -230,9 +336,9 @@ class _DisplayPageState extends State<DisplayPage> {
                               final localOffset = box.globalToLocal(details.globalPosition);
                               final x = localOffset.dx;
                               if (x < box.size.width / 2) {
-                                previousImage();
+                                goToPreviousImage();
                               } else {
-                                nextImage();
+                                goToNextImage();
                               }
                             },
                           ),
@@ -254,10 +360,10 @@ class _DisplayPageState extends State<DisplayPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          timerIsPaused ? startTimer() : pauseTimer();
+          _timerIsPaused ? startTimer() : pauseTimer();
         },
         child: Icon(
-          timerIsPaused ? Icons.play_arrow : Icons.pause,
+          _timerIsPaused ? Icons.play_arrow : Icons.pause,
           size: 25.0,
         ),
       ),

@@ -30,10 +30,10 @@ class _HomePageState extends State<HomePage> {
 
   int timerValue = 30;
   List<classes.SessionItem> session = [
-    classes.SessionItem(const Key("hi"), classes.SessionItemType.draw, 12, 12),
-    classes.SessionItem(const Key("hi1"), classes.SessionItemType.draw, 5, 5),
-    classes.SessionItem(const Key("hi2"), classes.SessionItemType.pause, 120, null),
-    classes.SessionItem(const Key("hi3"), classes.SessionItemType.draw, 8, 8)
+    classes.SessionItem(const Key("0"), classes.SessionItemType.draw, 12, 12),
+    classes.SessionItem(const Key("1"), classes.SessionItemType.draw, 5, 5),
+    classes.SessionItem(const Key("2"), classes.SessionItemType.pause, 120, null),
+    classes.SessionItem(const Key("3"), classes.SessionItemType.draw, 8, 8)
   ];
 
   @override
@@ -127,7 +127,16 @@ class _HomePageState extends State<HomePage> {
                                 context,
                                 MaterialPageRoute(builder: (context) => DisplayPage(
                                   imagePaths: imagePaths,
-                                  userSettings: classes.UserSettings(timerValue),
+                                  session: [
+                                    // Session item for infinite drawings
+                                    // with user specified timer value
+                                    classes.SessionItem(
+                                        const Key("1"),
+                                        classes.SessionItemType.draw,
+                                        timerValue,
+                                        -1
+                                    )
+                                  ],
                                 )),
                               );
                             }
@@ -143,39 +152,58 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(height: 24),
                     Expanded(
                       child: ReorderableListView(
-                        header: const Text("Create a session"),
+                        header: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("Create a session"),
+                            ElevatedButton(
+                                onPressed: () {
+                                  _navigateAddEditPage(
+                                      context,
+                                      classes.SessionItem(
+                                          Key((sessionKey + 1).toString()),
+                                          classes.SessionItemType.draw,
+                                          null,
+                                          null
+                                      ),
+                                      null
+                                  );
+                                  setState(() {
+                                    sessionKey += 1;
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Icon(Icons.add),
+                                    SizedBox(width: 4),
+                                    Text("Add item")
+                                  ],
+                                )
+                            ),
+                          ],
+                        ),
+
                         padding: const EdgeInsets.symmetric(horizontal: 40),
                         footer: Column(
                           children: [
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             ElevatedButton(
+                              child: const Text("Start"),
                               onPressed: () {
-                                _navigateAddEditPage(
-                                  context,
-                                  classes.SessionItem(
-                                    Key((sessionKey + 1).toString()),
-                                    classes.SessionItemType.draw,
-                                    null,
-                                    null
-                                  ),
-                                  null
-                                );
-                                setState(() {
-                                  sessionKey += 1;
-                                });
+                                if (session.isNotEmpty) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => DisplayPage(
+                                      imagePaths: imagePaths,
+                                      session: session,
+                                    )),
+                                  );
+                                }
                               },
-                              style: ElevatedButton.styleFrom(
-                                maximumSize: const Size(120, 500),
-                                padding: const EdgeInsets.fromLTRB(4, 18, 4, 18),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Icon(Icons.add),
-                                  SizedBox(width: 4),
-                                  Text("Add item")
-                                ],
-                              )
                             ),
                           ],
                         ),
@@ -239,12 +267,12 @@ class _HomePageState extends State<HomePage> {
         if (existingIndex != null) {
           session[existingIndex] = resultSessionItem;
           ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Session item updated"))
+            const SnackBar(content: Text("Session item updated"))
           );
         } else {
           session.add(resultSessionItem);
           ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Session item added"))
+            const SnackBar(content: Text("Session item added"))
           );
         }
       });

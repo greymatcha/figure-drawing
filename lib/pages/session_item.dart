@@ -77,7 +77,7 @@ class _SessionItemPageState extends State<SessionItemPage> {
                             onSaved: (String? value) {
                               if (value != null && value.isNotEmpty) {
                                 int? parsedInt = int.tryParse(value);
-                                if (parsedInt != null) {
+                                if (parsedInt != null && parsedInt > 0) {
                                   sessionItem.imageAmount = parsedInt;
                                 }
                               }
@@ -85,12 +85,12 @@ class _SessionItemPageState extends State<SessionItemPage> {
                             validator: (String? value) {
                               if (value != null && value.isNotEmpty) {
                                 int? parsedInt = int.tryParse(value);
-                                if (parsedInt != null) {
+                                if (parsedInt != null && parsedInt > 0) {
                                   return null;
                                 }
                               }
 
-                              return "Please enter a whole number";
+                              return "Please enter a whole number above 0";
                             },
                           ),
                           TextFormField(
@@ -102,7 +102,7 @@ class _SessionItemPageState extends State<SessionItemPage> {
                             onSaved: (String? value) {
                               if (value != null && value.isNotEmpty) {
                                 int? parsedInt = int.tryParse(value);
-                                if (parsedInt != null) {
+                                if (parsedInt != null && parsedInt > 0) {
                                   sessionItem.timeAmount = parsedInt;
                                 }
                               }
@@ -110,12 +110,12 @@ class _SessionItemPageState extends State<SessionItemPage> {
                             validator: (String? value) {
                               if (value != null && value.isNotEmpty) {
                                 int? parsedInt = int.tryParse(value);
-                                if (parsedInt != null) {
+                                if (parsedInt != null && parsedInt > 0) {
                                   return null;
                                 }
                               }
 
-                              return "Please enter a whole number";
+                              return "Please enter a whole number above 0";
                             },
                           ),
                           Padding(
@@ -150,7 +150,7 @@ class _SessionItemPageState extends State<SessionItemPage> {
                           onSaved: (String? value) {
                             if (value != null && value.isNotEmpty) {
                               int? parsedInt = int.tryParse(value);
-                              if (parsedInt != null) {
+                              if (parsedInt != null && parsedInt > 0) {
                                 sessionItem.timeAmount = parsedInt;
                               }
                             }
@@ -158,12 +158,12 @@ class _SessionItemPageState extends State<SessionItemPage> {
                           validator: (String? value) {
                             if (value != null && value.isNotEmpty) {
                               int? parsedInt = int.tryParse(value);
-                              if (parsedInt != null) {
+                              if (parsedInt != null && parsedInt > 0) {
                                 return null;
                               }
                             }
 
-                            return "Please enter a whole number";
+                            return "Please enter a whole number above 0";
                           },
                         ),
                         Padding(

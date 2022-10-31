@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-class UserSettings {
+class UserSettingsSimple {
   int timeBetweenImages;
-
-  UserSettings(this.timeBetweenImages);
+  UserSettingsSimple(this.timeBetweenImages);
 }
 
 enum SessionItemType { pause, draw }
