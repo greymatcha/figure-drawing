@@ -161,9 +161,6 @@ class _DisplayPageState extends State<DisplayPage> {
       });
       startTimer();
     }
-
-    print("_imageIndexPreviousSessions ${_imageIndexPreviousSessions}");
-    print("CURRENT SESSION: ${_currentSessionItemIndex}");
   }
 
   void goToPreviousImage() {
@@ -176,7 +173,7 @@ class _DisplayPageState extends State<DisplayPage> {
 
     if (
       widget.session[_currentSessionItemIndex].type == classes.SessionItemType.pause ||
-      _currentImageIndex - _imageIndexPreviousSessions < (widget.session[_currentSessionItemIndex].imageAmount as int) - 1
+      _currentImageIndex - _imageIndexPreviousSessions <= 0
     ) {
       if (canGoToPreviousSession()) {
         setState(() {
@@ -194,9 +191,6 @@ class _DisplayPageState extends State<DisplayPage> {
       });
       startTimer();
     }
-
-    print("_imageIndexPreviousSessions ${_imageIndexPreviousSessions}");
-    print("CURRENT SESSION: ${_currentSessionItemIndex}");
   }
 
   @override

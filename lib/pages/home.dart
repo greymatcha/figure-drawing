@@ -26,7 +26,6 @@ class _HomePageState extends State<HomePage> {
   List<String> imagePaths = [];
   String folderName = "";
   bool hasSelected = false;
-  int sessionKey = 0;
 
   int timerValue = 30;
   List<classes.SessionItem> session = [
@@ -35,6 +34,7 @@ class _HomePageState extends State<HomePage> {
     classes.SessionItem(const Key("2"), classes.SessionItemType.pause, 120, null),
     classes.SessionItem(const Key("3"), classes.SessionItemType.draw, 8, 8)
   ];
+  int sessionKey = 4; // Should be more than session.length
 
   @override
   Widget build(BuildContext context) {
