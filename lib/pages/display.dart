@@ -57,10 +57,7 @@ class _DisplayPageState extends State<DisplayPage> {
       (async.Timer timer) {
         if (_start == 0) {
           if (_currentImageIndex < widget.imagePaths.length - 1) {
-            setState(() {
-              _currentImageIndex += 1;
-              _start = widget.session[_currentSessionItemIndex].timeAmount as int;
-            });
+            goToNextImage();
           } else {
             setState(() {
               timer.cancel();
@@ -100,14 +97,18 @@ class _DisplayPageState extends State<DisplayPage> {
 
   // Should only be called inside of setState()
   void goToNextSession() {
+    classes.SessionItem previousSessionItem = widget.session[_currentSessionItemIndex];
     _currentSessionItemIndex += 1;
     _start = currentSessionTimeAmount();
     if (widget.session[_currentSessionItemIndex].type == classes.SessionItemType.pause) {
       _inBreak = true;
     } else {
       // TODO: Make breaks also have "0" imageAmount instead of null
-      _imageIndexPreviousSessions += (widget.session[_currentSessionItemIndex].imageAmount as int);
       _inBreak = false;
+    }
+
+    if (previousSessionItem.type != classes.SessionItemType.pause) {
+      _imageIndexPreviousSessions += (previousSessionItem.imageAmount as int);
     }
   }
 
@@ -161,7 +162,8 @@ class _DisplayPageState extends State<DisplayPage> {
       startTimer();
     }
 
-    print(_imageIndexPreviousSessions);
+    print("_imageIndexPreviousSessions ${_imageIndexPreviousSessions}");
+    print("CURRENT SESSION: ${_currentSessionItemIndex}");
   }
 
   void goToPreviousImage() {
@@ -178,22 +180,23 @@ class _DisplayPageState extends State<DisplayPage> {
     ) {
       if (canGoToPreviousSession()) {
         setState(() {
-          goToPreviousSession();
-
           if (!_inBreak) {
             _currentImageIndex -= 1;
           }
+          goToPreviousSession();
         });
         startTimer();
       }
     } else {
       setState(() {
         _currentImageIndex -= 1;
+        _start = currentSessionTimeAmount();
       });
       startTimer();
     }
 
-    print(_imageIndexPreviousSessions);
+    print("_imageIndexPreviousSessions ${_imageIndexPreviousSessions}");
+    print("CURRENT SESSION: ${_currentSessionItemIndex}");
   }
 
   @override
