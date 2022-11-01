@@ -28,13 +28,32 @@ class _HomePageState extends State<HomePage> {
   bool hasSelected = false;
 
   int timerValue = 30;
-  List<classes.SessionItem> session = [
-    classes.SessionItem(const Key("0"), classes.SessionItemType.draw, 12, 12),
-    classes.SessionItem(const Key("1"), classes.SessionItemType.draw, 5, 5),
-    classes.SessionItem(const Key("2"), classes.SessionItemType.pause, 120, null),
-    classes.SessionItem(const Key("3"), classes.SessionItemType.draw, 8, 8)
+  List<classes.SessionItemComplete> session = [
+    classes.SessionItemComplete(const Key("0"), classes.SessionItemType.draw, 12, 12),
+    classes.SessionItemComplete(const Key("1"), classes.SessionItemType.draw, 5, 5),
+    classes.SessionItemComplete(const Key("2"), classes.SessionItemType.pause, 120, 0),
+    classes.SessionItemComplete(const Key("3"), classes.SessionItemType.draw, 8, 8)
   ];
   int sessionKey = 4; // Should be more than session.length
+
+  void selectImages() async {
+    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+    if (selectedDirectory != null) {
+      setState(() {
+        imagePaths = utilities.getImagesInDirectoryRecursive(selectedDirectory);
+        folderName = selectedDirectory;
+        if (imagePaths.isNotEmpty) {
+          hasSelected = true;
+        }
+      });
+    }
+  }
+
+  void showNoFolderSelectedMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select a folder with images"))
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +94,7 @@ class _HomePageState extends State<HomePage> {
                     const Text("Supported image types: jpg, png, webp, gif"),
                   const SizedBox(height: 10),
                   ElevatedButton(
+                    onPressed: selectImages,
                     child: Text((() {
                       if (hasSelected) {
                         return 'Select a different folder';
@@ -82,16 +102,6 @@ class _HomePageState extends State<HomePage> {
                         return 'Select a folder';
                       }
                     }())),
-                    onPressed: () async {
-                      String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-                      if (selectedDirectory != null) {
-                        setState(() {
-                          imagePaths = utilities.getImagesInDirectoryRecursive(selectedDirectory);
-                          folderName = selectedDirectory;
-                          hasSelected = true;
-                        });
-                      }
-                    },
                   ),
                   Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -130,7 +140,7 @@ class _HomePageState extends State<HomePage> {
                                   session: [
                                     // Session item for infinite drawings
                                     // with user specified timer value
-                                    classes.SessionItem(
+                                    classes.SessionItemComplete(
                                         const Key("1"),
                                         classes.SessionItemType.draw,
                                         timerValue,
@@ -139,6 +149,8 @@ class _HomePageState extends State<HomePage> {
                                   ],
                                 )),
                               );
+                            } else {
+                              showNoFolderSelectedMessage();
                             }
                           }
                       )
@@ -150,6 +162,21 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   children: [
                     const SizedBox(height: 24),
+                    hasSelected ?
+                    Text('Found ${imagePaths.length.toString()} images in "$folderName"') :
+                    const Text("Supported image types: jpg, png, webp, gif"),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: selectImages,
+                      child: Text((() {
+                        if (hasSelected) {
+                          return 'Select a different folder';
+                        } else {
+                          return 'Select a folder';
+                        }
+                      }()))
+                    ),
+                    const SizedBox(height: 24),
                     Expanded(
                       child: ReorderableListView(
                         header: Row(
@@ -160,7 +187,7 @@ class _HomePageState extends State<HomePage> {
                                 onPressed: () {
                                   _navigateAddEditPage(
                                       context,
-                                      classes.SessionItem(
+                                      classes.SessionItemEdit(
                                           Key((sessionKey + 1).toString()),
                                           classes.SessionItemType.draw,
                                           null,
@@ -194,6 +221,10 @@ class _HomePageState extends State<HomePage> {
                             ElevatedButton(
                               child: const Text("Start"),
                               onPressed: () {
+                                if (!hasSelected) {
+                                  showNoFolderSelectedMessage();
+                                  return;
+                                }
                                 if (session.isNotEmpty) {
                                   Navigator.push(
                                     context,
@@ -210,7 +241,7 @@ class _HomePageState extends State<HomePage> {
                         children:
                           session.asMap().entries.map((MapEntry entry) {
                             int index = entry.key;
-                            classes.SessionItem sessionItem = entry.value;
+                            classes.SessionItemComplete sessionItem = entry.value;
                             return ListTile(
                               key: sessionItem.key,
                               title: Text(sessionItemDescription(sessionItem)),
@@ -242,7 +273,7 @@ class _HomePageState extends State<HomePage> {
                             if (oldIndex < newIndex) {
                               newIndex -= 1;
                             }
-                            final classes.SessionItem sessionItem = session.removeAt(oldIndex);
+                            final classes.SessionItemComplete sessionItem = session.removeAt(oldIndex);
                             session.insert(newIndex, sessionItem);
                           });
                         }
@@ -258,9 +289,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _navigateAddEditPage(BuildContext context, classes.SessionItem sessionItem, int? existingIndex) async {
-    final classes.SessionItem? resultSessionItem = await Navigator.push(
+    final classes.SessionItemComplete? resultSessionItem = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => SessionItemPage(sessionItem: sessionItem))
+      MaterialPageRoute(builder: (context) => SessionItemPage(
+          sessionItem: sessionItem.runtimeType == classes.SessionItemComplete ? classes.SessionItemEdit(
+            sessionItem.key,
+            sessionItem.type,
+            (sessionItem as classes.SessionItemComplete).timeAmount,
+            sessionItem.imageAmount
+          ) : sessionItem as classes.SessionItemEdit
+      ))
     );
     if (resultSessionItem != null) {
       setState(() {
@@ -280,7 +318,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-String sessionItemDescription(classes.SessionItem sessionItem) {
+String sessionItemDescription(classes.SessionItemComplete sessionItem) {
   String result = "";
 
   if (sessionItem.type == classes.SessionItemType.pause) {

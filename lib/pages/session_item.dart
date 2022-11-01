@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:figure_drawing/classes.dart' as classes;
 
 class SessionItemPage extends StatefulWidget {
-  final classes.SessionItem sessionItem;
+  final classes.SessionItemEdit sessionItem;
 
   const SessionItemPage ({ required this.sessionItem });
 
@@ -12,11 +12,20 @@ class SessionItemPage extends StatefulWidget {
 }
 
 class _SessionItemPageState extends State<SessionItemPage> {
-  classes.SessionItem sessionItem;
+  classes.SessionItemEdit sessionItem;
   final _formDrawKey = GlobalKey<FormState>();
   final _formBreakKey = GlobalKey<FormState>();
 
   _SessionItemPageState({ required this.sessionItem });
+
+  void popNavigator() {
+    Navigator.pop(context, classes.SessionItemComplete(
+        sessionItem.key,
+        sessionItem.type,
+        sessionItem.timeAmount as int,
+        sessionItem.type == classes.SessionItemType.pause ? 0 : sessionItem.imageAmount as int
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +53,7 @@ class _SessionItemPageState extends State<SessionItemPage> {
                       }
                     },
                   ),
-                  Text("Drawing"),
+                  const Text("Drawing"),
                   Radio(
                     value: classes.SessionItemType.pause,
                     groupValue: sessionItem.type,
@@ -56,7 +65,7 @@ class _SessionItemPageState extends State<SessionItemPage> {
                       }
                     },
                   ),
-                  Text("Break"),
+                  const Text("Break"),
                 ],
               ),
               sessionItem.type == classes.SessionItemType.draw ?
@@ -123,7 +132,7 @@ class _SessionItemPageState extends State<SessionItemPage> {
                             child: ElevatedButton(
                               onPressed: () {
                                 if (_formDrawKey.currentState!.validate()) {
-                                  Navigator.pop(context, sessionItem);
+                                  popNavigator();
                                 }
                               },
                               child: const Text('Submit'),
@@ -171,7 +180,7 @@ class _SessionItemPageState extends State<SessionItemPage> {
                           child: ElevatedButton(
                             onPressed: () {
                               if (_formBreakKey.currentState!.validate()) {
-                                Navigator.pop(context, sessionItem);
+                                popNavigator();
                               }
                             },
                             child: const Text('Submit'),

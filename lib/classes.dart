@@ -11,12 +11,17 @@ class SessionItem {
   Key key;
   SessionItemType type;
 
-  // For a break, this decides how long the break is. For an image it decides
-  // how much time is spent per image.
+  SessionItem(this.key, this.type);
+}
+
+class SessionItemEdit extends SessionItem {
   int? timeAmount;
-
-  // Optional
   int? imageAmount;
+  SessionItemEdit(Key key, SessionItemType type, this.timeAmount, this.imageAmount) : super(key, type);
+}
 
-  SessionItem(this.key, this.type, this.timeAmount, this.imageAmount);
+class SessionItemComplete extends SessionItem {
+  int timeAmount;
+  int imageAmount;
+  SessionItemComplete(Key key, SessionItemType type, this.timeAmount, this.imageAmount) : super(key, type);
 }

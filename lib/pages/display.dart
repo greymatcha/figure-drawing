@@ -17,9 +17,10 @@ enum MenuItems { fileInfo, showGrid, flipImage, blackWhite, showTimer }
 
 class DisplayPage extends StatefulWidget {
   final List<String> imagePaths;
-  final List<classes.SessionItem> session;
+  final List<classes.SessionItemComplete> session;
 
   const DisplayPage({
+    super.key,
     required this.imagePaths,
     required this.session
   });
@@ -37,7 +38,7 @@ class _DisplayPageState extends State<DisplayPage> {
   int _currentSessionItemIndex = 0;
   async.Timer? _timer;
 
-  MenuState menuState = MenuState(false, false, false, false, true);
+  final MenuState _menuState = MenuState(false, false, false, false, true);
 
   void startTimer() {
     // Prevent multiple timers being created
@@ -97,34 +98,23 @@ class _DisplayPageState extends State<DisplayPage> {
 
   // Should only be called inside of setState()
   void goToNextSession() {
-    classes.SessionItem previousSessionItem = widget.session[_currentSessionItemIndex];
+    classes.SessionItemComplete previousSessionItem = widget.session[_currentSessionItemIndex];
     _currentSessionItemIndex += 1;
     _start = currentSessionTimeAmount();
-    if (widget.session[_currentSessionItemIndex].type == classes.SessionItemType.pause) {
-      _inBreak = true;
-    } else {
-      // TODO: Make breaks also have "0" imageAmount instead of null
-      _inBreak = false;
-    }
-
-    if (previousSessionItem.type != classes.SessionItemType.pause) {
-      _imageIndexPreviousSessions += (previousSessionItem.imageAmount as int);
-    }
+    _inBreak = (widget.session[_currentSessionItemIndex].type == classes.SessionItemType.pause) ? true : false;
+    _imageIndexPreviousSessions += previousSessionItem.imageAmount;
   }
 
+  // Should only be called inside of setState()
   void goToPreviousSession() {
     _currentSessionItemIndex -= 1;
     _start = currentSessionTimeAmount();
-    if (widget.session[_currentSessionItemIndex].type == classes.SessionItemType.pause) {
-      _inBreak = true;
-    } else {
-      _imageIndexPreviousSessions -= (widget.session[_currentSessionItemIndex].imageAmount as int);
-      _inBreak = false;
-    }
+    _inBreak = (widget.session[_currentSessionItemIndex].type == classes.SessionItemType.pause) ? true : false;
+    _imageIndexPreviousSessions -= widget.session[_currentSessionItemIndex].imageAmount;
   }
 
   int currentSessionTimeAmount() {
-    return (widget.session[_currentSessionItemIndex].timeAmount as int);
+    return widget.session[_currentSessionItemIndex].timeAmount;
   }
 
   void goToNextImage() {
@@ -139,7 +129,7 @@ class _DisplayPageState extends State<DisplayPage> {
       // Check if we need to change session
       (
         widget.session[_currentSessionItemIndex].type == classes.SessionItemType.pause ||
-        _currentImageIndex - _imageIndexPreviousSessions >= (widget.session[_currentSessionItemIndex].imageAmount as int) - 1
+        _currentImageIndex - _imageIndexPreviousSessions >= (widget.session[_currentSessionItemIndex].imageAmount) - 1
       )
     ) {
       if (canGoToNextSession()) {
@@ -198,7 +188,7 @@ class _DisplayPageState extends State<DisplayPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        _start = widget.session[_currentSessionItemIndex].timeAmount as int;
+        _start = widget.session[_currentSessionItemIndex].timeAmount;
       });
       startTimer();
     });
@@ -226,22 +216,22 @@ class _DisplayPageState extends State<DisplayPage> {
                   break;
 
                   case MenuItems.showGrid: {
-                    menuState.showGrid = !menuState.showGrid;
+                    _menuState.showGrid = !_menuState.showGrid;
                   }
                   break;
 
                   case MenuItems.flipImage: {
-                    menuState.flipImage = !menuState.flipImage;
+                    _menuState.flipImage = !_menuState.flipImage;
                   }
                   break;
 
                   case MenuItems.blackWhite: {
-                    menuState.blackWhite = !menuState.blackWhite;
+                    _menuState.blackWhite = !_menuState.blackWhite;
                   }
                   break;
 
                   case MenuItems.showTimer: {
-                    menuState.showTimer = !menuState.showTimer;
+                    _menuState.showTimer = !_menuState.showTimer;
                   }
                   break;
                 }
@@ -254,7 +244,7 @@ class _DisplayPageState extends State<DisplayPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       const Text('Flip image'),
-                      menuState.flipImage ?
+                      _menuState.flipImage ?
                       const Icon(
                           Icons.check,
                           color: Colors.black
@@ -269,7 +259,7 @@ class _DisplayPageState extends State<DisplayPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       const Text('Black & white'),
-                      menuState.blackWhite ?
+                      _menuState.blackWhite ?
                       const Icon(
                           Icons.check,
                           color: Colors.black
@@ -284,7 +274,7 @@ class _DisplayPageState extends State<DisplayPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       const Text('Show timer'),
-                      menuState.showTimer ?
+                      _menuState.showTimer ?
                       const Icon(
                           Icons.check,
                           color: Colors.black
@@ -308,11 +298,11 @@ class _DisplayPageState extends State<DisplayPage> {
                       children: [
                         Expanded(
                           child: Transform.scale(
-                              scaleX: menuState.flipImage ? -1 : 1,
+                              scaleX: _menuState.flipImage ? -1 : 1,
                               child: ColorFiltered(
                                   colorFilter:
                                   ColorFilter.mode(
-                                      menuState.blackWhite ? Colors.grey : Colors.transparent,
+                                      _menuState.blackWhite ? Colors.grey : Colors.transparent,
                                       BlendMode.saturation
                                   ),
                                   child: _inBreak ? const Text("BREAK") : Image.file(
@@ -345,7 +335,7 @@ class _DisplayPageState extends State<DisplayPage> {
                     Positioned(
                       top: 12,
                       right: 12,
-                      child: menuState.showTimer ?
+                      child: _menuState.showTimer ?
                         Text("$_start") :
                         const SizedBox.shrink(),
                     ),
