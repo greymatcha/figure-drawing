@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 class UserSettingsSimple {
   int timeBetweenImages;
@@ -59,7 +60,7 @@ class Session {
   Map<String, dynamic> toJson() => {
     "id": id,
     "title": title,
-    "items": items.map((sessionItem) => sessionItem.toJson()).toList()
+    "items": items.map((sessionItem) => jsonEncode(sessionItem)).toList()
   };
 }
 
@@ -76,7 +77,7 @@ class SessionStorageData {
       );
 
   Map<String, dynamic> toJson() => {
-    "sessions": sessions.map((session) => session.toJson()).toList(),
+    "sessions": sessions.map((session) => jsonEncode(session)).toList(),
     "lastActive": lastActive ?? "" // Set it to an empty string if it is null
   };
 }
