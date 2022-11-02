@@ -26,7 +26,7 @@ class DisplayPage extends StatefulWidget {
   });
 
   @override
-  _DisplayPageState createState() => _DisplayPageState();
+  State<DisplayPage> createState() => _DisplayPageState();
 }
 
 class _DisplayPageState extends State<DisplayPage> {

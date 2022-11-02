@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'package:figure_drawing/pages/display.dart';
-import 'package:figure_drawing/pages/session_item.dart';
+import 'package:figure_drawing/pages/create_session_item.dart';
+import 'package:figure_drawing/pages/select_session.dart';
 import 'package:figure_drawing/utilities.dart' as utilities;
 import 'package:figure_drawing/classes.dart' as classes;
 
@@ -18,8 +19,10 @@ const List<Map<String, Object>> timerDropdownOptions = [
 ];
 
 class HomePage extends StatefulWidget {
+  const HomePage ({ super.key });
+
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
@@ -185,6 +188,16 @@ class _HomePageState extends State<HomePage> {
                       }()))
                     ),
                     const SizedBox(height: 24),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const SelectSessionPage())
+                          );
+                        },
+                        child: const Text("Select session")
+                    ),
+                    const SizedBox(height: 24),
                     Expanded(
                       child: ReorderableListView(
                         header: Row(
@@ -299,7 +312,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _navigateAddEditPage(BuildContext context, classes.SessionItem sessionItem, int? existingIndex) async {
     final classes.SessionItemComplete? resultSessionItem = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => SessionItemPage(
+      MaterialPageRoute(builder: (context) => CreateSessionItemPage(
           sessionItem: sessionItem.runtimeType == classes.SessionItemComplete ? classes.SessionItemEdit(
             sessionItem.key,
             sessionItem.type,

@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 
 import 'package:figure_drawing/classes.dart' as classes;
 
-class SessionItemPage extends StatefulWidget {
+class CreateSessionItemPage extends StatefulWidget {
   final classes.SessionItemEdit sessionItem;
 
-  const SessionItemPage ({ required this.sessionItem });
+  const CreateSessionItemPage ({ super.key, required this.sessionItem });
 
   @override
-  _SessionItemPageState createState() => _SessionItemPageState(sessionItem: this.sessionItem);
+  State<CreateSessionItemPage> createState() => _CreateSessionItemPageState(sessionItem: this.sessionItem);
 }
 
-class _SessionItemPageState extends State<SessionItemPage> {
+class _CreateSessionItemPageState extends State<CreateSessionItemPage> {
   classes.SessionItemEdit sessionItem;
   final _formDrawKey = GlobalKey<FormState>();
   final _formBreakKey = GlobalKey<FormState>();
 
-  _SessionItemPageState({ required this.sessionItem });
+  _CreateSessionItemPageState({ required this.sessionItem });
 
   void popNavigator() {
     Navigator.pop(context, classes.SessionItemComplete(
