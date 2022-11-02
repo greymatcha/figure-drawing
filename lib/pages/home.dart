@@ -35,10 +35,10 @@ class _HomePageState extends State<HomePage> {
     UniqueKey().toString(),
     "My first session",
     [
-      classes.SessionItemComplete(const Key("0"), classes.SessionItemType.draw, 12, 12),
-      classes.SessionItemComplete(const Key("1"), classes.SessionItemType.draw, 5, 5),
-      classes.SessionItemComplete(const Key("2"), classes.SessionItemType.pause, 120, 0),
-      classes.SessionItemComplete(const Key("3"), classes.SessionItemType.draw, 8, 8)
+      classes.SessionItemComplete(classes.SessionItemType.draw, 12, 12),
+      classes.SessionItemComplete(classes.SessionItemType.draw, 5, 5),
+      classes.SessionItemComplete(classes.SessionItemType.pause, 120, 0),
+      classes.SessionItemComplete(classes.SessionItemType.draw, 8, 8)
     ]
   );
   int sessionKey = 4; // Should be more than session.length
@@ -60,6 +60,34 @@ class _HomePageState extends State<HomePage> {
     ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please select a folder with images"))
     );
+  }
+
+  Future<void> _navigateAddEditPage(BuildContext context, classes.SessionItem sessionItem, int? existingIndex) async {
+    final classes.SessionItemComplete? resultSessionItem = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => CreateSessionItemPage(
+            sessionItem: sessionItem.runtimeType == classes.SessionItemComplete ? classes.SessionItemEdit(
+                sessionItem.type,
+                (sessionItem as classes.SessionItemComplete).timeAmount,
+                sessionItem.imageAmount
+            ) : sessionItem as classes.SessionItemEdit
+        ))
+    );
+    if (resultSessionItem != null) {
+      setState(() {
+        if (existingIndex != null) {
+          session.items[existingIndex] = resultSessionItem;
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Session item updated"))
+          );
+        } else {
+          session.items.add(resultSessionItem);
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Session item added"))
+          );
+        }
+      });
+    }
   }
 
   @override
@@ -95,47 +123,53 @@ class _HomePageState extends State<HomePage> {
             children: [
               Column(
                 children: <Widget>[
-                  const SizedBox(height: 24),
-                  hasSelected ?
-                    Text('Found ${imagePaths.length.toString()} images in "$folderName"') :
-                    const Text("Supported image types: jpg, png, webp, gif"),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: selectImages,
-                    child: Text((() {
-                      if (hasSelected) {
-                        return 'Select a different folder';
-                      } else {
-                        return 'Select a folder';
-                      }
-                    }())),
-                  ),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        const Text('Time per image:'),
-                        const SizedBox(width: 10),
-                        DropdownButton(
-                          value: timerValue,
-                          icon: const Icon(Icons.arrow_downward),
-                          elevation: 16,
-                          onChanged: (Object? selectedItem) {
-                            setState(() {
-                              timerValue = selectedItem as int;
-                            });
-                          },
-                          items: timerDropdownOptions.map((Map item) {
-                            return DropdownMenuItem(
-                                value: item["value"],
-                                child: Text(item["label"])
-                            );
-                          }).toList(),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 24),
+                        hasSelected ?
+                        Text('Found ${imagePaths.length.toString()} images in "$folderName"') :
+                        const Text("Supported image types: jpg, png, webp, gif"),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: selectImages,
+                          child: Text((() {
+                            if (hasSelected) {
+                              return 'Select a different folder';
+                            } else {
+                              return 'Select a folder';
+                            }
+                          }())),
+                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              const Text('Time per image:'),
+                              const SizedBox(width: 10),
+                              DropdownButton(
+                                value: timerValue,
+                                icon: const Icon(Icons.arrow_downward),
+                                elevation: 16,
+                                onChanged: (Object? selectedItem) {
+                                  setState(() {
+                                    timerValue = selectedItem as int;
+                                  });
+                                },
+                                items: timerDropdownOptions.map((Map item) {
+                                  return DropdownMenuItem(
+                                      value: item["value"],
+                                      child: Text(item["label"])
+                                  );
+                                }).toList(),
+                              ),
+                            ]
                         ),
                       ]
+                    )
                   ),
+
                   Column(
                     children: <Widget>[
-                      const SizedBox(height: 10),
                       ElevatedButton(
                           child: const Text('Start'),
                           onPressed: () {
@@ -151,7 +185,6 @@ class _HomePageState extends State<HomePage> {
                                       // Session item for infinite drawings
                                       // with user specified timer value
                                       classes.SessionItemComplete(
-                                          const Key("1"),
                                           classes.SessionItemType.draw,
                                           timerValue,
                                           -1
@@ -164,7 +197,8 @@ class _HomePageState extends State<HomePage> {
                               showNoFolderSelectedMessage();
                             }
                           }
-                      )
+                      ),
+                      const SizedBox(height: 32),
                     ],
                   )
                 ],
@@ -209,7 +243,6 @@ class _HomePageState extends State<HomePage> {
                                   _navigateAddEditPage(
                                       context,
                                       classes.SessionItemEdit(
-                                          Key((sessionKey + 1).toString()),
                                           classes.SessionItemType.draw,
                                           null,
                                           null
@@ -236,35 +269,12 @@ class _HomePageState extends State<HomePage> {
                         ),
 
                         padding: const EdgeInsets.symmetric(horizontal: 40),
-                        footer: Column(
-                          children: [
-                            const SizedBox(height: 12),
-                            ElevatedButton(
-                              child: const Text("Start"),
-                              onPressed: () {
-                                if (!hasSelected) {
-                                  showNoFolderSelectedMessage();
-                                  return;
-                                }
-                                if (session.items.isNotEmpty) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => DisplayPage(
-                                      imagePaths: imagePaths,
-                                      session: session,
-                                    )),
-                                  );
-                                }
-                              },
-                            ),
-                          ],
-                        ),
                         children:
                           session.items.asMap().entries.map((MapEntry entry) {
                             int index = entry.key;
                             classes.SessionItemComplete sessionItem = entry.value;
                             return ListTile(
-                              key: sessionItem.key,
+                              key: Key(index.toString()),
                               title: Text(sessionItemDescription(sessionItem)),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -300,6 +310,29 @@ class _HomePageState extends State<HomePage> {
                         }
                       )
                     ),
+                    Column(
+                      children: [
+                        ElevatedButton(
+                          child: const Text("Start"),
+                          onPressed: () {
+                            if (!hasSelected) {
+                              showNoFolderSelectedMessage();
+                              return;
+                            }
+                            if (session.items.isNotEmpty) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => DisplayPage(
+                                  imagePaths: imagePaths,
+                                  session: session,
+                                )),
+                              );
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 32),
+                      ],
+                    ),
                   ]
                 ),
               )
@@ -307,35 +340,6 @@ class _HomePageState extends State<HomePage> {
         )
       )
     );
-  }
-
-  Future<void> _navigateAddEditPage(BuildContext context, classes.SessionItem sessionItem, int? existingIndex) async {
-    final classes.SessionItemComplete? resultSessionItem = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => CreateSessionItemPage(
-          sessionItem: sessionItem.runtimeType == classes.SessionItemComplete ? classes.SessionItemEdit(
-            sessionItem.key,
-            sessionItem.type,
-            (sessionItem as classes.SessionItemComplete).timeAmount,
-            sessionItem.imageAmount
-          ) : sessionItem as classes.SessionItemEdit
-      ))
-    );
-    if (resultSessionItem != null) {
-      setState(() {
-        if (existingIndex != null) {
-          session.items[existingIndex] = resultSessionItem;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Session item updated"))
-          );
-        } else {
-          session.items.add(resultSessionItem);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Session item added"))
-          );
-        }
-      });
-    }
   }
 }
 

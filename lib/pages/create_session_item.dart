@@ -8,19 +8,16 @@ class CreateSessionItemPage extends StatefulWidget {
   const CreateSessionItemPage ({ super.key, required this.sessionItem });
 
   @override
-  State<CreateSessionItemPage> createState() => _CreateSessionItemPageState(sessionItem: this.sessionItem);
+  State<CreateSessionItemPage> createState() => _CreateSessionItemPageState();
 }
 
 class _CreateSessionItemPageState extends State<CreateSessionItemPage> {
-  classes.SessionItemEdit sessionItem;
+  late classes.SessionItemEdit sessionItem = widget.sessionItem;
   final _formDrawKey = GlobalKey<FormState>();
   final _formBreakKey = GlobalKey<FormState>();
 
-  _CreateSessionItemPageState({ required this.sessionItem });
-
   void popNavigator() {
     Navigator.pop(context, classes.SessionItemComplete(
-        sessionItem.key,
         sessionItem.type,
         sessionItem.timeAmount as int,
         sessionItem.type == classes.SessionItemType.pause ? 0 : sessionItem.imageAmount as int
@@ -28,10 +25,17 @@ class _CreateSessionItemPageState extends State<CreateSessionItemPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    sessionItem = widget.sessionItem;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add session item"),
+        title: const Text("Create or edit session item"),
       ),
       body: Center(
         child: Padding(
