@@ -17,7 +17,7 @@ enum MenuItems { fileInfo, showGrid, flipImage, blackWhite, showTimer }
 
 class DisplayPage extends StatefulWidget {
   final List<String> imagePaths;
-  final List<classes.SessionItemComplete> session;
+  final classes.Session session;
 
   const DisplayPage({
     super.key,
@@ -81,7 +81,7 @@ class _DisplayPageState extends State<DisplayPage> {
   }
 
   bool canGoToNextSession() {
-    if (_currentSessionItemIndex < widget.session.length - 1) {
+    if (_currentSessionItemIndex < widget.session.items.length - 1) {
       return true;
     }
 
@@ -98,10 +98,10 @@ class _DisplayPageState extends State<DisplayPage> {
 
   // Should only be called inside of setState()
   void goToNextSession() {
-    classes.SessionItemComplete previousSessionItem = widget.session[_currentSessionItemIndex];
+    classes.SessionItemComplete previousSessionItem = widget.session.items[_currentSessionItemIndex];
     _currentSessionItemIndex += 1;
     _start = currentSessionTimeAmount();
-    _inBreak = (widget.session[_currentSessionItemIndex].type == classes.SessionItemType.pause) ? true : false;
+    _inBreak = (widget.session.items[_currentSessionItemIndex].type == classes.SessionItemType.pause) ? true : false;
     _imageIndexPreviousSessions += previousSessionItem.imageAmount;
   }
 
@@ -109,12 +109,12 @@ class _DisplayPageState extends State<DisplayPage> {
   void goToPreviousSession() {
     _currentSessionItemIndex -= 1;
     _start = currentSessionTimeAmount();
-    _inBreak = (widget.session[_currentSessionItemIndex].type == classes.SessionItemType.pause) ? true : false;
-    _imageIndexPreviousSessions -= widget.session[_currentSessionItemIndex].imageAmount;
+    _inBreak = (widget.session.items[_currentSessionItemIndex].type == classes.SessionItemType.pause) ? true : false;
+    _imageIndexPreviousSessions -= widget.session.items[_currentSessionItemIndex].imageAmount;
   }
 
   int currentSessionTimeAmount() {
-    return widget.session[_currentSessionItemIndex].timeAmount;
+    return widget.session.items[_currentSessionItemIndex].timeAmount;
   }
 
   void goToNextImage() {
@@ -125,11 +125,11 @@ class _DisplayPageState extends State<DisplayPage> {
 
     if (
       // -1 image amount means the session goes on forever. This is used in the "simple" mode.
-      widget.session[_currentSessionItemIndex].imageAmount != -1 &&
+      widget.session.items[_currentSessionItemIndex].imageAmount != -1 &&
       // Check if we need to change session
       (
-        widget.session[_currentSessionItemIndex].type == classes.SessionItemType.pause ||
-        _currentImageIndex - _imageIndexPreviousSessions >= (widget.session[_currentSessionItemIndex].imageAmount) - 1
+        widget.session.items[_currentSessionItemIndex].type == classes.SessionItemType.pause ||
+        _currentImageIndex - _imageIndexPreviousSessions >= (widget.session.items[_currentSessionItemIndex].imageAmount) - 1
       )
     ) {
       if (canGoToNextSession()) {
@@ -162,7 +162,7 @@ class _DisplayPageState extends State<DisplayPage> {
     }
 
     if (
-      widget.session[_currentSessionItemIndex].type == classes.SessionItemType.pause ||
+      widget.session.items[_currentSessionItemIndex].type == classes.SessionItemType.pause ||
       _currentImageIndex - _imageIndexPreviousSessions <= 0
     ) {
       if (canGoToPreviousSession()) {
@@ -188,7 +188,7 @@ class _DisplayPageState extends State<DisplayPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        _start = widget.session[_currentSessionItemIndex].timeAmount;
+        _start = widget.session.items[_currentSessionItemIndex].timeAmount;
       });
       startTimer();
     });

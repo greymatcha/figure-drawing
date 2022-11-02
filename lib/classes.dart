@@ -25,3 +25,18 @@ class SessionItemComplete extends SessionItem {
   int imageAmount;
   SessionItemComplete(Key key, SessionItemType type, this.timeAmount, this.imageAmount) : super(key, type);
 }
+
+class Session {
+  String id;
+  String title;
+  List<SessionItemComplete> items;
+
+  Session(this.id, this.title, this.items);
+}
+
+class SessionStorageData {
+  List<Session> sessions;
+  String? lastActive;
+
+  SessionStorageData(this.sessions, this.lastActive);
+}

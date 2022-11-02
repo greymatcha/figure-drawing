@@ -3,7 +3,7 @@ import 'package:file_picker/file_picker.dart';
 
 import 'package:figure_drawing/pages/display.dart';
 import 'package:figure_drawing/pages/session_item.dart';
-import 'package:figure_drawing/utilities/utilities.dart' as utilities;
+import 'package:figure_drawing/utilities.dart' as utilities;
 import 'package:figure_drawing/classes.dart' as classes;
 
 
@@ -28,12 +28,16 @@ class _HomePageState extends State<HomePage> {
   bool hasSelected = false;
 
   int timerValue = 30;
-  List<classes.SessionItemComplete> session = [
-    classes.SessionItemComplete(const Key("0"), classes.SessionItemType.draw, 12, 12),
-    classes.SessionItemComplete(const Key("1"), classes.SessionItemType.draw, 5, 5),
-    classes.SessionItemComplete(const Key("2"), classes.SessionItemType.pause, 120, 0),
-    classes.SessionItemComplete(const Key("3"), classes.SessionItemType.draw, 8, 8)
-  ];
+  classes.Session session = classes.Session(
+    UniqueKey().toString(),
+    "My first session",
+    [
+      classes.SessionItemComplete(const Key("0"), classes.SessionItemType.draw, 12, 12),
+      classes.SessionItemComplete(const Key("1"), classes.SessionItemType.draw, 5, 5),
+      classes.SessionItemComplete(const Key("2"), classes.SessionItemType.pause, 120, 0),
+      classes.SessionItemComplete(const Key("3"), classes.SessionItemType.draw, 8, 8)
+    ]
+  );
   int sessionKey = 4; // Should be more than session.length
 
   void selectImages() async {
@@ -137,16 +141,20 @@ class _HomePageState extends State<HomePage> {
                                 context,
                                 MaterialPageRoute(builder: (context) => DisplayPage(
                                   imagePaths: imagePaths,
-                                  session: [
-                                    // Session item for infinite drawings
-                                    // with user specified timer value
-                                    classes.SessionItemComplete(
-                                        const Key("1"),
-                                        classes.SessionItemType.draw,
-                                        timerValue,
-                                        -1
-                                    )
-                                  ],
+                                  session: classes.Session(
+                                    UniqueKey().toString(),
+                                    "Empty session",
+                                    [
+                                      // Session item for infinite drawings
+                                      // with user specified timer value
+                                      classes.SessionItemComplete(
+                                          const Key("1"),
+                                          classes.SessionItemType.draw,
+                                          timerValue,
+                                          -1
+                                      )
+                                    ]
+                                  ),
                                 )),
                               );
                             } else {
@@ -225,7 +233,7 @@ class _HomePageState extends State<HomePage> {
                                   showNoFolderSelectedMessage();
                                   return;
                                 }
-                                if (session.isNotEmpty) {
+                                if (session.items.isNotEmpty) {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) => DisplayPage(
@@ -239,7 +247,7 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                         children:
-                          session.asMap().entries.map((MapEntry entry) {
+                          session.items.asMap().entries.map((MapEntry entry) {
                             int index = entry.key;
                             classes.SessionItemComplete sessionItem = entry.value;
                             return ListTile(
@@ -257,7 +265,7 @@ class _HomePageState extends State<HomePage> {
                                   }, icon: const Icon(Icons.edit)),
                                   IconButton(onPressed: () {
                                     setState(() {
-                                      session.removeAt(index);
+                                      session.items.removeAt(index);
                                     });
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(content: Text("Session item removed"))
@@ -273,8 +281,8 @@ class _HomePageState extends State<HomePage> {
                             if (oldIndex < newIndex) {
                               newIndex -= 1;
                             }
-                            final classes.SessionItemComplete sessionItem = session.removeAt(oldIndex);
-                            session.insert(newIndex, sessionItem);
+                            final classes.SessionItemComplete sessionItem = session.items.removeAt(oldIndex);
+                            session.items.insert(newIndex, sessionItem);
                           });
                         }
                       )
@@ -303,12 +311,12 @@ class _HomePageState extends State<HomePage> {
     if (resultSessionItem != null) {
       setState(() {
         if (existingIndex != null) {
-          session[existingIndex] = resultSessionItem;
+          session.items[existingIndex] = resultSessionItem;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Session item updated"))
           );
         } else {
-          session.add(resultSessionItem);
+          session.items.add(resultSessionItem);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Session item added"))
           );
