@@ -43,14 +43,20 @@ class _HomeTabSessionWidget extends State<HomeTabSessionWidget> {
 
   void doLoadSessionStorageData() async {
     classes.SessionStorageData savedSessionStorageData = await loadSessionStorageDataJson();
+    classes.Session? lastActiveSession;
+    if (savedSessionStorageData.lastActive != null) {
+      for (classes.Session savedSession in savedSessionStorageData.sessions) {
+        if (savedSession.id == savedSessionStorageData.lastActive) {
+          lastActiveSession = savedSession;
+          break;
+        }
+      }
+    }
+
     setState(() {
       hasLoadedSessionStorageDataFile = true;
-      if (savedSessionStorageData.lastActive != null) {
-        for (classes.Session savedSession in savedSessionStorageData.sessions) {
-          if (savedSession.id == savedSessionStorageData.lastActive) {
-            session = savedSession;
-          }
-        }
+      if (lastActiveSession != null) {
+        session = lastActiveSession;
       }
     });
   }
