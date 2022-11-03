@@ -111,6 +111,16 @@ class _SelectSessionPage extends State<SelectSessionPage> {
     );
   }
 
+  void selectSession(int index) {
+    setState(() {
+      sessionStorageData.lastActive = sessionStorageData.sessions[index].id;
+    });
+
+    saveSessionStorageDataJsonToDisk(sessionStorageData);
+
+    Navigator.pop(context, sessionStorageData.sessions[index]);
+  }
+
 
   @override
   void initState() {
@@ -143,35 +153,41 @@ class _SelectSessionPage extends State<SelectSessionPage> {
                             height: 60,
                             child: Padding(
                               padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(sessionStorageData.sessions[index].title),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      IconButton(
-                                        onPressed: () {
-                                          navigateAddEditPage(
-                                            context,
-                                            sessionStorageData.sessions[index],
-                                            index
-                                          );
-                                        },
-                                        icon: const Icon(Icons.edit),
-                                        iconSize: 18,
-                                      ),
-                                      const SizedBox(width: 24),
-                                      IconButton(
-                                        onPressed: () {
-                                          deleteSession(index);
-                                        },
-                                        icon: const Icon(Icons.delete_outline),
-                                        iconSize: 18,
-                                      ),
-                                    ],
-                                  )
-                                ]
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.translucent,
+                                onTap: () {
+                                  selectSession(index);
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(sessionStorageData.sessions[index].title),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        IconButton(
+                                          onPressed: () {
+                                            navigateAddEditPage(
+                                              context,
+                                              sessionStorageData.sessions[index],
+                                              index
+                                            );
+                                          },
+                                          icon: const Icon(Icons.edit),
+                                          iconSize: 18,
+                                        ),
+                                        const SizedBox(width: 24),
+                                        IconButton(
+                                          onPressed: () {
+                                            deleteSession(index);
+                                          },
+                                          icon: const Icon(Icons.delete_outline),
+                                          iconSize: 18,
+                                        ),
+                                      ],
+                                    )
+                                  ]
+                                )
                               )
                             ),
                         );
