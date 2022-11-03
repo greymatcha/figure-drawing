@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'package:figure_drawing/pages/display.dart';
-import 'package:figure_drawing/pages/create_session_item.dart';
-import 'package:figure_drawing/utilities.dart' as utilities;
+import 'package:figure_drawing/utilities/image_loading.dart';
 import 'package:figure_drawing/classes.dart' as classes;
 import 'package:figure_drawing/widgets/home/tab_simple.dart';
 import 'package:figure_drawing/widgets/home/tab_session.dart';
@@ -24,7 +23,7 @@ class _HomePageState extends State<HomePage> {
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
     if (selectedDirectory != null) {
       setState(() {
-        imagePaths = utilities.getImagesInDirectoryRecursive(selectedDirectory);
+        imagePaths = getImagesInDirectoryRecursive(selectedDirectory);
         folderName = selectedDirectory;
         if (imagePaths.isNotEmpty) {
           hasSelectedFolders = true;

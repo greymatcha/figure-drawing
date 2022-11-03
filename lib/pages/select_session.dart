@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart' as path_provider;
 
 import 'package:figure_drawing/classes.dart' as classes;
 import 'package:figure_drawing/pages/create_session.dart';
+import 'package:figure_drawing/utilities/session_management.dart';
 
 class SelectSessionPage extends StatefulWidget {
   const SelectSessionPage({super.key});
@@ -18,49 +19,6 @@ class _SelectSessionPage extends State<SelectSessionPage> {
   final List<int> colorCodes = <int>[600, 500, 100];
   bool hasLoadedSessionStorageDataFile = false;
   late classes.SessionStorageData sessionStorageData;
-
-  Future<File> get getSessionStorageDataFile async {
-    Directory documentsDirectory = await path_provider.getApplicationDocumentsDirectory();
-    String documentsPath = documentsDirectory.path;
-    return File("$documentsPath/FigureDrawing/session_storage_data.json").create(recursive: true);
-  }
-
-  void saveSessionStorageDataJsonToDisk(classes.SessionStorageData sessionStorageDataToSave) async {
-    File sessionStorageDataFile = await getSessionStorageDataFile;
-
-    if (!await sessionStorageDataFile.exists()) {
-      await sessionStorageDataFile.create();
-    }
-    
-    sessionStorageDataFile.writeAsString(
-      jsonEncode(sessionStorageDataToSave)
-    );
-  }
-
-  void loadSessionStorageDataJson() async {
-    File sessionStorageDataFile = await getSessionStorageDataFile;
-
-    String sessionStorageDataFileString = await sessionStorageDataFile.readAsString();
-
-    if (sessionStorageDataFileString.isEmpty) {
-      classes.SessionStorageData newSessionStorageData = classes.SessionStorageData(
-          [],
-          null
-      );
-      saveSessionStorageDataJsonToDisk(newSessionStorageData);
-      setState(() {
-        sessionStorageData = newSessionStorageData;
-      });
-    } else {
-      Map <String, dynamic> jsonDecoded = json.decode(sessionStorageDataFileString);
-      setState(() {
-        sessionStorageData = classes.SessionStorageData.fromJson(
-          jsonDecoded
-        );
-      });
-    }
-    hasLoadedSessionStorageDataFile = true;
-  }
 
   Future<void> navigateAddEditPage(BuildContext context, classes.Session sessionToEdit, int? existingIndex) async {
     final classes.Session? resultSession = await Navigator.push(
@@ -121,12 +79,19 @@ class _SelectSessionPage extends State<SelectSessionPage> {
     Navigator.pop(context, sessionStorageData.sessions[index]);
   }
 
+  void doLoadSessionStorageData() async {
+    classes.SessionStorageData savedSessionStorageData = await loadSessionStorageDataJson();
+    setState(() {
+      hasLoadedSessionStorageDataFile = true;
+      sessionStorageData = savedSessionStorageData;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
 
-    loadSessionStorageDataJson();
+    doLoadSessionStorageData();
   }
 
   @override

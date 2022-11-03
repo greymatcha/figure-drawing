@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:figure_drawing/classes.dart' as classes;
 import 'package:figure_drawing/pages/select_session.dart';
+import 'package:figure_drawing/utilities/session_management.dart';
 
 class HomeTabSessionWidget extends StatefulWidget {
   final bool hasSelectedFolders;
@@ -40,6 +41,27 @@ class _HomeTabSessionWidget extends State<HomeTabSessionWidget> {
     }
   }
 
+  void doLoadSessionStorageData() async {
+    classes.SessionStorageData savedSessionStorageData = await loadSessionStorageDataJson();
+    setState(() {
+      hasLoadedSessionStorageDataFile = true;
+      if (savedSessionStorageData.lastActive != null) {
+        for (classes.Session savedSession in savedSessionStorageData.sessions) {
+          if (savedSession.id == savedSessionStorageData.lastActive) {
+            session = savedSession;
+          }
+        }
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    doLoadSessionStorageData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -61,6 +83,12 @@ class _HomeTabSessionWidget extends State<HomeTabSessionWidget> {
                 }()))
             ),
             const SizedBox(height: 24),
+            session != null ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(session!.title),
+                ]
+            ) : const SizedBox(),
             ElevatedButton(
                 onPressed: () {
                   navigateSelectSessionPage(context);
