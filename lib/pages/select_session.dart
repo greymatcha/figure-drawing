@@ -195,24 +195,27 @@ class _SelectSessionPage extends State<SelectSessionPage> {
                       separatorBuilder: (BuildContext context, int index) => const Divider(),
                     )
                   ) : const CircularProgressIndicator(),
-              ElevatedButton(
-                onPressed: () {
-                  navigateAddEditPage(
-                    context,
-                    classes.Session(
-                      UniqueKey().toString(),
-                      "",
-                      []
-                    ),
-                    null
-                  );
-                },
-                child: const Text("Create new session")
-              ),
             ],
           )
         )
-      )
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          navigateAddEditPage(
+              context,
+              classes.Session(
+                  UniqueKey().toString(),
+                  "",
+                  []
+              ),
+              null
+          );
+        },
+        child: const Icon(
+          Icons.add,
+          size: 25.0,
+        ),
+      ),
     );
   }
 }

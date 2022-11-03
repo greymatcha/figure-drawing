@@ -57,7 +57,20 @@ class _CreateSessionPage extends State<CreateSessionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Create or edit session")
+        title: const Text("Create or edit session"),
+        actions: [
+          TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            ),
+            onPressed: () {
+              if (_formKey.currentState!.validate() && session.items.isNotEmpty) {
+                popNavigator(cancel: false);
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ]
       ),
       body: Center(
         child: Padding(
@@ -171,26 +184,6 @@ class _CreateSessionPage extends State<CreateSessionPage> {
                       }).toList()
                   )
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate() && session.items.isNotEmpty) {
-                          popNavigator(cancel: false);
-                        }
-                      },
-                      child: const Text("Save")
-                  ),
-                  const SizedBox(width: 12),
-                  OutlinedButton(
-                      onPressed: () {
-                        popNavigator(cancel: true);
-                      },
-                      child: const Text("Cancel")
-                  ),
-                ],
-              )
             ],
           )
         )
