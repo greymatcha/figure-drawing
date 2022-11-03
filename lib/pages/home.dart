@@ -8,17 +8,6 @@ import 'package:figure_drawing/classes.dart' as classes;
 import 'package:figure_drawing/widgets/home/tab_simple.dart';
 import 'package:figure_drawing/widgets/home/tab_session.dart';
 
-
-const List<Map<String, Object>> timerDropdownOptions = [
-  { "label": "2s", "value": 2 },
-  { "label": "30s", "value": 30 },
-  { "label": "45s", "value": 45 },
-  { "label": "1m", "value": 60 },
-  { "label": "2m", "value": 120 },
-  { "label": "5m", "value": 300 },
-  { "label": "10m", "value": 600 },
-];
-
 class HomePage extends StatefulWidget {
   const HomePage ({ super.key });
 
@@ -29,20 +18,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<String> imagePaths = [];
   String folderName = "";
-  bool hasSelected = false;
-
-  int timerValue = 30;
-  classes.Session session = classes.Session(
-    UniqueKey().toString(),
-    "My first session",
-    [
-      classes.SessionItemComplete(classes.SessionItemType.draw, 12, 12),
-      classes.SessionItemComplete(classes.SessionItemType.draw, 5, 5),
-      classes.SessionItemComplete(classes.SessionItemType.pause, 120, 0),
-      classes.SessionItemComplete(classes.SessionItemType.draw, 8, 8)
-    ]
-  );
-  int sessionKey = 4; // Should be more than session.length
+  bool hasSelectedFolders = false;
 
   void selectImages() async {
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
@@ -51,14 +27,14 @@ class _HomePageState extends State<HomePage> {
         imagePaths = utilities.getImagesInDirectoryRecursive(selectedDirectory);
         folderName = selectedDirectory;
         if (imagePaths.isNotEmpty) {
-          hasSelected = true;
+          hasSelectedFolders = true;
         }
       });
     }
   }
 
-  void startSession(int? timerValue) {
-    if (hasSelected) {
+  void startSession(int? timerValue, classes.Session? session) {
+    if (hasSelectedFolders) {
       late classes.Session sessionToUse;
       if (timerValue != null) {
         sessionToUse = classes.Session(
@@ -74,8 +50,13 @@ class _HomePageState extends State<HomePage> {
               )
             ]
         );
-      } else {
+      } else if (session != null) {
         sessionToUse = session;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Please select a session"))
+        );
+        return;
       }
       Navigator.push(
         context,
@@ -89,12 +70,6 @@ class _HomePageState extends State<HomePage> {
           const SnackBar(content: Text("Please select a folder with images"))
       );
     }
-  }
-
-  void setSession(classes.Session newSession) {
-    setState(() {
-      session = newSession;
-    });
   }
 
   @override
@@ -129,14 +104,14 @@ class _HomePageState extends State<HomePage> {
         body: TabBarView(
             children: [
               HomeTabSimpleWidget(
-                hasSelected,
+                hasSelectedFolders,
                 imagePaths,
                 folderName,
                 selectImages,
                 startSession
               ),
               HomeTabSessionWidget(
-                  hasSelected,
+                  hasSelectedFolders,
                   imagePaths,
                   folderName,
                   selectImages,

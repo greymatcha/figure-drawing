@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:figure_drawing/classes.dart' as classes;
+
 const List<Map<String, Object>> timerDropdownOptions = [
   { "label": "2s", "value": 2 },
   { "label": "30s", "value": 30 },
@@ -11,14 +13,14 @@ const List<Map<String, Object>> timerDropdownOptions = [
 ];
 
 class HomeTabSimpleWidget extends StatefulWidget {
-  final bool hasSelected;
+  final bool hasSelectedFolders;
   final List<String> imagePaths;
   final String folderName;
   final VoidCallback selectImages;
-  final Function(int?) startSession;
+  final Function(int?, classes.Session?) startSession;
 
   const HomeTabSimpleWidget(
-      this.hasSelected,
+      this.hasSelectedFolders,
       this.imagePaths,
       this.folderName,
       this.selectImages,
@@ -42,14 +44,14 @@ class _HomeTabSimpleWidget extends State<HomeTabSimpleWidget> {
             child: Column(
                 children: [
                   const SizedBox(height: 24),
-                  widget.hasSelected ?
+                  widget.hasSelectedFolders ?
                   Text('Found ${widget.imagePaths.length.toString()} images in "${widget.folderName}"') :
                   const Text("Supported image types: jpg, png, webp, gif"),
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: widget.selectImages,
                     child: Text((() {
-                      if (widget.hasSelected) {
+                      if (widget.hasSelectedFolders) {
                         return 'Select a different folder';
                       } else {
                         return 'Select a folder';
@@ -87,7 +89,7 @@ class _HomeTabSimpleWidget extends State<HomeTabSimpleWidget> {
           children: <Widget>[
             ElevatedButton(
               onPressed: () {
-                widget.startSession(timerValue);
+                widget.startSession(timerValue, null);
               },
               child: const Text('Start'),
             ),
