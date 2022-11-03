@@ -74,7 +74,7 @@ class _CreateSessionPage extends State<CreateSessionPage> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 40),
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -108,41 +108,9 @@ class _CreateSessionPage extends State<CreateSessionPage> {
                   )
                 )
               ),
+              const SizedBox(height: 12),
               Expanded(
                   child: ReorderableListView(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                      footer: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                              onPressed: () {
-                                navigateAddEditPage(
-                                    context,
-                                    classes.SessionItemEdit(
-                                        classes.SessionItemType.draw,
-                                        null,
-                                        null
-                                    ),
-                                    null
-                                );
-                                setState(() {
-                                  sessionKey += 1;
-                                });
-                              },
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Icon(Icons.add),
-                                  SizedBox(width: 4),
-                                  Text("Add item")
-                                ],
-                              )
-                          ),
-                        ],
-                      ),
                       onReorder: (int oldIndex, int newIndex) {
                         setState(() {
                           if (oldIndex < newIndex) {
@@ -187,6 +155,26 @@ class _CreateSessionPage extends State<CreateSessionPage> {
             ],
           )
         )
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          navigateAddEditPage(
+              context,
+              classes.SessionItemEdit(
+                  classes.SessionItemType.draw,
+                  null,
+                  null
+              ),
+              null
+          );
+          setState(() {
+            sessionKey += 1;
+          });
+        },
+        child: const Icon(
+          Icons.add,
+          size: 25.0,
+        ),
       )
     );
   }

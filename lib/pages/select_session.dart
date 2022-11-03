@@ -1,11 +1,9 @@
-import 'dart:io';
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart' as path_provider;
 
 import 'package:figure_drawing/classes.dart' as classes;
 import 'package:figure_drawing/pages/create_session.dart';
 import 'package:figure_drawing/utilities/session_management.dart';
+import 'package:figure_drawing/widgets/home/session_row.dart';
 
 class SelectSessionPage extends StatefulWidget {
   const SelectSessionPage({super.key});
@@ -102,7 +100,7 @@ class _SelectSessionPage extends State<SelectSessionPage> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 40),
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -111,50 +109,19 @@ class _SelectSessionPage extends State<SelectSessionPage> {
                   const Text("empty") :
                   Expanded(
                     child: ListView.separated(
-                      padding: const EdgeInsets.all(8),
                       itemCount: sessionStorageData.sessions.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return SizedBox(
-                            height: 60,
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-                              child: GestureDetector(
-                                behavior: HitTestBehavior.translucent,
-                                onTap: () {
-                                  selectSession(index);
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(sessionStorageData.sessions[index].title),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            navigateAddEditPage(
-                                              context,
-                                              sessionStorageData.sessions[index],
-                                              index
-                                            );
-                                          },
-                                          icon: const Icon(Icons.edit),
-                                          iconSize: 18,
-                                        ),
-                                        const SizedBox(width: 24),
-                                        IconButton(
-                                          onPressed: () {
-                                            deleteSession(index);
-                                          },
-                                          icon: const Icon(Icons.delete_outline),
-                                          iconSize: 18,
-                                        ),
-                                      ],
-                                    )
-                                  ]
-                                )
-                              )
-                            ),
+                        return SessionRow(
+                          sessionStorageData.sessions[index],
+                          index,
+                          (session, index) => {
+                            navigateAddEditPage(context, session, index)
+                          },
+                          deleteSession,
+                          () => {
+                            selectSession(index)
+                          },
+                          false
                         );
                       },
                       separatorBuilder: (BuildContext context, int index) => const Divider(),

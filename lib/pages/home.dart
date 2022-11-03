@@ -102,20 +102,26 @@ class _HomePageState extends State<HomePage> {
         ),
         body: TabBarView(
             children: [
-              HomeTabSimpleWidget(
-                hasSelectedFolders,
-                imagePaths,
-                folderName,
-                selectImages,
-                startSession
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+                child: HomeTabSimpleWidget(
+                    hasSelectedFolders,
+                    imagePaths,
+                    folderName,
+                    selectImages,
+                    startSession
+                ),
               ),
-              HomeTabSessionWidget(
-                  hasSelectedFolders,
-                  imagePaths,
-                  folderName,
-                  selectImages,
-                  startSession
-              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+                child: HomeTabSessionWidget(
+                    hasSelectedFolders,
+                    imagePaths,
+                    folderName,
+                    selectImages,
+                    startSession
+                ),
+              )
           ]
         )
       )
