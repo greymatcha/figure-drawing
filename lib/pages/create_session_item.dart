@@ -36,6 +36,25 @@ class _CreateSessionItemPageState extends State<CreateSessionItemPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Create or edit session item"),
+        actions: [
+          TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            ),
+            onPressed: () {
+              if (sessionItem.type == classes.SessionItemType.draw) {
+                if (_formDrawKey.currentState!.validate()) {
+                  popNavigator();
+                }
+              } else {
+                if (_formBreakKey.currentState!.validate()) {
+                  popNavigator();
+                }
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ]
       ),
       body: Center(
         child: Padding(
@@ -178,18 +197,7 @@ class _CreateSessionItemPageState extends State<CreateSessionItemPage> {
 
                             return "Please enter a whole number above 0";
                           },
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_formBreakKey.currentState!.validate()) {
-                                popNavigator();
-                              }
-                            },
-                            child: const Text('Submit'),
-                          ),
-                        ),
+                        )
                       ],
                     )
                   )
