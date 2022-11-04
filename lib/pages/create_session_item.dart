@@ -149,18 +149,7 @@ class _CreateSessionItemPageState extends State<CreateSessionItemPage> {
 
                               return "Please enter a whole number above 0";
                             },
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16.0),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                if (_formDrawKey.currentState!.validate()) {
-                                  popNavigator();
-                                }
-                              },
-                              child: const Text('Submit'),
-                            ),
-                          ),
+                          )
                         ],
                       )
                   )
