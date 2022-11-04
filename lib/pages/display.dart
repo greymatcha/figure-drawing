@@ -3,6 +3,7 @@ import 'dart:io' as io;
 import 'dart:async' as async;
 
 import 'package:figure_drawing/classes.dart' as classes;
+import 'package:figure_drawing/widgets/display/progress_indicator.dart';
 
 class MenuState {
   bool fileInfo;
@@ -33,52 +34,13 @@ class _DisplayPageState extends State<DisplayPage> {
   int _currentImageIndex = 0;
   int _imageIndexPreviousSessions = 0;
   late int _start = widget.session.items[0].timeAmount;
-  bool _timerIsPaused = true;
   int _currentSessionItemIndex = 0;
+  bool isPaused = false;
   late bool _inBreak = (widget.session.items[0].type == classes.SessionItemType.pause) ? true : false;
-  async.Timer? _timer;
+
+  final classes.TimerController timerController = classes.TimerController();
 
   final MenuState _menuState = MenuState(false, false, false, false, true);
-
-  void startTimer() {
-    // Prevent multiple timers being created
-    if (!_timerIsPaused) {
-      return;
-    }
-
-    if (_timer != null && _timer!.isActive) {
-      _timer!.cancel();
-    }
-
-    setState(() {
-      _timerIsPaused = false;
-    });
-    _timer = async.Timer.periodic(
-      const Duration(seconds: 1),
-      (async.Timer timer) {
-        if (_start == 0) {
-          if (_currentImageIndex < widget.imagePaths.length - 1) {
-            goToNextImage();
-          } else {
-            setState(() {
-              timer.cancel();
-            });
-          }
-        } else {
-          setState(() {
-            _start--;
-          });
-        }
-      },
-    );
-  }
-
-  void pauseTimer() {
-    setState(() {
-      _timerIsPaused = true;
-      _timer?.cancel();
-    });
-  }
 
   bool canGoToNextSession() {
     if (_currentSessionItemIndex < widget.session.items.length - 1) {
@@ -139,7 +101,7 @@ class _DisplayPageState extends State<DisplayPage> {
             _currentImageIndex += 1;
           }
         });
-        startTimer();
+        timerController.reset(widget.session.items[_currentSessionItemIndex].timeAmount);
       } else {
         // TODO: Handle case where we have ended the last session
       }
@@ -149,7 +111,7 @@ class _DisplayPageState extends State<DisplayPage> {
         _currentImageIndex += 1;
         _start = currentSessionTimeAmount();
       });
-      startTimer();
+      timerController.reset(widget.session.items[_currentSessionItemIndex].timeAmount);
     }
   }
 
@@ -172,14 +134,14 @@ class _DisplayPageState extends State<DisplayPage> {
           }
           goToPreviousSession();
         });
-        startTimer();
+        timerController.reset(widget.session.items[_currentSessionItemIndex].timeAmount);
       }
     } else {
       setState(() {
         _currentImageIndex -= 1;
         _start = currentSessionTimeAmount();
       });
-      startTimer();
+      timerController.reset(widget.session.items[_currentSessionItemIndex].timeAmount);
     }
   }
 
@@ -187,14 +149,8 @@ class _DisplayPageState extends State<DisplayPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      startTimer();
+      timerController.reset(widget.session.items[0].timeAmount);
     });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
   }
 
   @override
@@ -287,6 +243,11 @@ class _DisplayPageState extends State<DisplayPage> {
       body: Center(
         child: Column (
           children: <Widget>[
+            ProgressIndicatorWidget(() {
+              if (_currentImageIndex < widget.imagePaths.length - 1) {
+                goToNextImage();
+              }
+            }, timerController),
             Expanded(
                 child: Stack(
                   children: <Widget>[
@@ -344,10 +305,18 @@ class _DisplayPageState extends State<DisplayPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _timerIsPaused ? startTimer() : pauseTimer();
+          if (isPaused) {
+            timerController.play();
+          } else {
+            timerController.pause();
+          }
+
+          setState(() {
+            isPaused = !isPaused;
+          });
         },
         child: Icon(
-          _timerIsPaused ? Icons.play_arrow : Icons.pause,
+          isPaused ? Icons.play_arrow : Icons.pause,
           size: 25.0,
         ),
       ),
