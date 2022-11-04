@@ -32,10 +32,10 @@ class DisplayPage extends StatefulWidget {
 class _DisplayPageState extends State<DisplayPage> {
   int _currentImageIndex = 0;
   int _imageIndexPreviousSessions = 0;
-  int _start = 0;
+  late int _start = widget.session.items[0].timeAmount;
   bool _timerIsPaused = true;
-  bool _inBreak = false;
   int _currentSessionItemIndex = 0;
+  late bool _inBreak = (widget.session.items[0].type == classes.SessionItemType.pause) ? true : false;
   async.Timer? _timer;
 
   final MenuState _menuState = MenuState(false, false, false, false, true);
@@ -135,7 +135,7 @@ class _DisplayPageState extends State<DisplayPage> {
       if (canGoToNextSession()) {
         setState(() {
           goToNextSession();
-          if (!_inBreak) {
+          if (!_inBreak && _currentSessionItemIndex > 1) {
             _currentImageIndex += 1;
           }
         });
@@ -187,9 +187,6 @@ class _DisplayPageState extends State<DisplayPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        _start = widget.session.items[_currentSessionItemIndex].timeAmount;
-      });
       startTimer();
     });
   }
