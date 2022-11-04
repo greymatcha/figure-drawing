@@ -17,10 +17,10 @@ class FigureDrawingApp extends StatelessWidget {
     return MaterialApp(
   debugShowCheckedModeBanner: false,
   title: 'Figure Drawing',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      theme: ThemeData.dark().copyWith(
+        useMaterial3: true,
       ),
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }

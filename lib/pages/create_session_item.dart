@@ -2,25 +2,22 @@ import 'package:flutter/material.dart';
 
 import 'package:figure_drawing/classes.dart' as classes;
 
-class SessionItemPage extends StatefulWidget {
+class CreateSessionItemPage extends StatefulWidget {
   final classes.SessionItemEdit sessionItem;
 
-  const SessionItemPage ({ required this.sessionItem });
+  const CreateSessionItemPage ({ super.key, required this.sessionItem });
 
   @override
-  _SessionItemPageState createState() => _SessionItemPageState(sessionItem: this.sessionItem);
+  State<CreateSessionItemPage> createState() => _CreateSessionItemPageState();
 }
 
-class _SessionItemPageState extends State<SessionItemPage> {
-  classes.SessionItemEdit sessionItem;
+class _CreateSessionItemPageState extends State<CreateSessionItemPage> {
+  late classes.SessionItemEdit sessionItem = widget.sessionItem;
   final _formDrawKey = GlobalKey<FormState>();
   final _formBreakKey = GlobalKey<FormState>();
 
-  _SessionItemPageState({ required this.sessionItem });
-
   void popNavigator() {
     Navigator.pop(context, classes.SessionItemComplete(
-        sessionItem.key,
         sessionItem.type,
         sessionItem.timeAmount as int,
         sessionItem.type == classes.SessionItemType.pause ? 0 : sessionItem.imageAmount as int
@@ -28,10 +25,36 @@ class _SessionItemPageState extends State<SessionItemPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    sessionItem = widget.sessionItem;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add session item"),
+        title: const Text("Create or edit session item"),
+        actions: [
+          TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            ),
+            onPressed: () {
+              if (sessionItem.type == classes.SessionItemType.draw) {
+                if (_formDrawKey.currentState!.validate()) {
+                  popNavigator();
+                }
+              } else {
+                if (_formBreakKey.currentState!.validate()) {
+                  popNavigator();
+                }
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ]
       ),
       body: Center(
         child: Padding(
@@ -126,18 +149,7 @@ class _SessionItemPageState extends State<SessionItemPage> {
 
                               return "Please enter a whole number above 0";
                             },
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16.0),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                if (_formDrawKey.currentState!.validate()) {
-                                  popNavigator();
-                                }
-                              },
-                              child: const Text('Submit'),
-                            ),
-                          ),
+                          )
                         ],
                       )
                   )
@@ -174,18 +186,7 @@ class _SessionItemPageState extends State<SessionItemPage> {
 
                             return "Please enter a whole number above 0";
                           },
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_formBreakKey.currentState!.validate()) {
-                                popNavigator();
-                              }
-                            },
-                            child: const Text('Submit'),
-                          ),
-                        ),
+                        )
                       ],
                     )
                   )
