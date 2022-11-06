@@ -38,7 +38,7 @@ class SessionRow extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(session.title),
+            Text("${session.emoji} ${session.title}"),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

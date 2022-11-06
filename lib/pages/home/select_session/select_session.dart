@@ -103,7 +103,7 @@ class _SelectSessionPage extends State<SelectSessionPage> {
             children: [
               hasLoadedSessionStorageDataFile ?
                 sessionStorageData.sessions.isEmpty ?
-                  const Text("empty") :
+                  const Text("No sessions found") :
                   Expanded(
                     child: ListView.separated(
                       itemCount: sessionStorageData.sessions.length,
@@ -134,6 +134,7 @@ class _SelectSessionPage extends State<SelectSessionPage> {
               context,
               classes.Session(
                   UniqueKey().toString(),
+                  "",
                   "",
                   []
               ),

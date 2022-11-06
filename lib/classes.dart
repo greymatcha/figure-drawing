@@ -43,20 +43,23 @@ class SessionItemComplete extends SessionItem {
 class Session {
   String id;
   String title;
+  String emoji = "";
   List<SessionItemComplete> items;
 
-  Session(this.id, this.title, this.items);
+  Session(this.id, this.title, this.emoji, this.items);
 
   Session.fromJson(Map<String, dynamic> json):
     this(
       json["id"],
       json["title"],
+      json["emoji"],
       json["items"].map<SessionItemComplete>((jsonSessionItem) => SessionItemComplete.fromJson(jsonSessionItem)).toList()
     );
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "title": title,
+    "emoji": emoji,
     "items": items.map((sessionItem) => sessionItem.toJson()).toList()
   };
 }

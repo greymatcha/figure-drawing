@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:figure_drawing/classes.dart' as classes;
 import 'package:figure_drawing/pages/home/select_session/create_session_item.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 
 class CreateSessionPage extends StatefulWidget {
   final classes.Session session;
@@ -16,6 +17,7 @@ class _CreateSessionPage extends State<CreateSessionPage> {
   late classes.Session session = widget.session;
   late int sessionKey = widget.session.items.length;
   final _formKey = GlobalKey<FormState>();
+  bool pickingEmoji = false;
 
   void popNavigator({required bool cancel}) {
     if (cancel) {
@@ -84,24 +86,58 @@ class _CreateSessionPage extends State<CreateSessionPage> {
                   },
                   child: Column(
                     children: [
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: "Session title"
-                        ),
-                        initialValue: session.title,
-                        onSaved: (String? value) {
-                          if (value != null) {
-                            session.title = value;
-                          }
-                        },
-                        validator: (String? value) {
-                          if (value != null && value.isNotEmpty) {
-                            return null;
-                          }
+                      Row(
+                        children: [
+                          Expanded(child: TextFormField(
+                              decoration: const InputDecoration(
+                                  labelText: "Session title"
+                              ),
+                              initialValue: session.title,
+                              onSaved: (String? value) {
+                                if (value != null) {
+                                  session.title = value;
+                                }
+                              },
+                              validator: (String? value) {
+                                if (value != null && value.isNotEmpty) {
+                                  return null;
+                                }
 
-                          return "Please give your session a title";
-                        }
-                      )
+                                return "Please give your session a title";
+                              }
+                          ),),
+                          TextButton(onPressed: () => setState(() => pickingEmoji = !pickingEmoji), child: Text(
+                              session.emoji.isNotEmpty ? session.emoji : "Select icon", style: const TextStyle(fontSize: 24)
+                          ))
+                        ],
+                      ),
+                      pickingEmoji ?
+                      Column(
+                        children: [
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            height: 200,
+                            width: 500,
+                            child: EmojiPicker(
+                                onEmojiSelected: (Category? category, Emoji? emoji) {
+                                  if (emoji != null) {
+                                    setState(() {
+                                      session.emoji = emoji.emoji;
+                                      pickingEmoji = false;
+                                    });
+                                  }
+                                },
+                                config: const Config(
+                                  columns: 7,
+                                  emojiSizeMax: 32,
+                                  verticalSpacing: 0,
+                                  horizontalSpacing: 0,
+                                  gridPadding: EdgeInsets.zero,
+                                )
+                            ),
+                          )
+                        ],
+                      ) : const SizedBox(),
                     ],
                   )
                 )

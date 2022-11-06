@@ -23,6 +23,7 @@ class _HomePageState extends State<HomePage> {
         sessionToUse = classes.Session(
             UniqueKey().toString(),
             "Empty session",
+            "",
             [
               // Session item for infinite drawings
               // with user specified timer value

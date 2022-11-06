@@ -83,7 +83,7 @@ class _HomeTabSessionWidget extends State<HomeTabSessionWidget> {
                 navigateSelectSessionPage(context)
               }, true
             ) : SessionRow(
-            classes.Session("1", "Select a session", []),
+            classes.Session("1", "Select a session", "", []),
               1, null, null,
                   () => {
                 navigateSelectSessionPage(context)
