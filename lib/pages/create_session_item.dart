@@ -58,9 +58,8 @@ class _CreateSessionItemPageState extends State<CreateSessionItemPage> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

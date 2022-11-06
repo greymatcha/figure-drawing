@@ -30,13 +30,10 @@ class _SelectSessionPage extends State<SelectSessionPage> {
       setState(() {
         if (existingIndex != null) {
           sessionStorageData.sessions[existingIndex] = resultSession;
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Session updated"))
-          );
         } else {
           sessionStorageData.sessions.add(resultSession);
           ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Session saved"))
+              const SnackBar(content: Text("Session created"))
           );
         }
       });

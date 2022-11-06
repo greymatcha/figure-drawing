@@ -4,12 +4,13 @@ import 'package:figure_drawing/classes.dart' as classes;
 
 class ProgressIndicatorWidget extends StatefulWidget {
   final Function onFinished;
-
-final classes.TimerController timerController;
+  final classes.TimerController timerController;
+  final bool visible;
 
   const ProgressIndicatorWidget(
       this.onFinished,
       this.timerController,
+      this.visible,
       { super.key }
     );
 
@@ -80,7 +81,7 @@ class _ProgressIndicatorWidget extends State<ProgressIndicatorWidget> with Ticke
     // }
 
 
-    return controller != null ? Column(
+    return controller != null && widget.visible ? Column(
       children: [
         /* Code for if we want to add a linear progress indicator */
         // LinearProgressIndicator(

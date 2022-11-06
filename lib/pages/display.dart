@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:io' as io;
-import 'dart:async' as async;
 
 import 'package:figure_drawing/classes.dart' as classes;
 import 'package:figure_drawing/widgets/display/progress_indicator.dart';
@@ -33,10 +32,13 @@ class DisplayPage extends StatefulWidget {
 class _DisplayPageState extends State<DisplayPage> {
   int _currentImageIndex = 0;
   int _imageIndexPreviousSessions = 0;
-  late int _start = widget.session.items[0].timeAmount;
   int _currentSessionItemIndex = 0;
   bool isPaused = false;
   late bool _inBreak = (widget.session.items[0].type == classes.SessionItemType.pause) ? true : false;
+  late List<Image> images = widget.imagePaths.map((imagePath) => Image.file(
+    io.File(imagePath),
+    fit: BoxFit.contain
+  )).toList();
 
   final classes.TimerController timerController = classes.TimerController();
 
@@ -62,7 +64,6 @@ class _DisplayPageState extends State<DisplayPage> {
   void goToNextSession() {
     classes.SessionItemComplete previousSessionItem = widget.session.items[_currentSessionItemIndex];
     _currentSessionItemIndex += 1;
-    _start = currentSessionTimeAmount();
     _inBreak = (widget.session.items[_currentSessionItemIndex].type == classes.SessionItemType.pause) ? true : false;
     _imageIndexPreviousSessions += previousSessionItem.imageAmount;
   }
@@ -70,7 +71,6 @@ class _DisplayPageState extends State<DisplayPage> {
   // Should only be called inside of setState()
   void goToPreviousSession() {
     _currentSessionItemIndex -= 1;
-    _start = currentSessionTimeAmount();
     _inBreak = (widget.session.items[_currentSessionItemIndex].type == classes.SessionItemType.pause) ? true : false;
     _imageIndexPreviousSessions -= widget.session.items[_currentSessionItemIndex].imageAmount;
   }
@@ -101,6 +101,7 @@ class _DisplayPageState extends State<DisplayPage> {
             _currentImageIndex += 1;
           }
         });
+        precacheImages();
         timerController.reset(widget.session.items[_currentSessionItemIndex].timeAmount);
       } else {
         // TODO: Handle case where we have ended the last session
@@ -109,8 +110,8 @@ class _DisplayPageState extends State<DisplayPage> {
     } else {
       setState(() {
         _currentImageIndex += 1;
-        _start = currentSessionTimeAmount();
       });
+      precacheImages();
       timerController.reset(widget.session.items[_currentSessionItemIndex].timeAmount);
     }
   }
@@ -134,15 +135,33 @@ class _DisplayPageState extends State<DisplayPage> {
           }
           goToPreviousSession();
         });
+        precacheImages();
         timerController.reset(widget.session.items[_currentSessionItemIndex].timeAmount);
       }
     } else {
       setState(() {
         _currentImageIndex -= 1;
-        _start = currentSessionTimeAmount();
       });
+      precacheImages();
       timerController.reset(widget.session.items[_currentSessionItemIndex].timeAmount);
     }
+  }
+
+  void precacheImages() {
+    if (_currentImageIndex > 0) {
+      precacheImage(images[_currentImageIndex - 1].image, context);
+    }
+
+    if (_currentImageIndex < widget.imagePaths.length - 1) {
+      precacheImage(images[_currentImageIndex + 1].image, context);
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    precacheImages();
   }
 
   @override
@@ -259,10 +278,7 @@ class _DisplayPageState extends State<DisplayPage> {
                                         _menuState.blackWhite ? Colors.grey : Colors.transparent,
                                         BlendMode.saturation
                                     ),
-                                    child: _inBreak ? const Text("BREAK") : Image.file(
-                                      io.File(widget.imagePaths[_currentImageIndex]),
-                                      fit: BoxFit.contain,
-                                    )
+                                    child: _inBreak ? const Text("BREAK") : images[_currentImageIndex]
                                 )
                             ),
                           )
@@ -289,12 +305,11 @@ class _DisplayPageState extends State<DisplayPage> {
                         ),
                       ],
                     ),
-                    _menuState.showProgress ?
-                      ProgressIndicatorWidget(() {
-                        if (_currentImageIndex < widget.imagePaths.length - 1) {
-                          goToNextImage();
-                        }
-                      }, timerController) : const SizedBox(),
+                    ProgressIndicatorWidget(() {
+                      if (_currentImageIndex < widget.imagePaths.length - 1) {
+                        goToNextImage();
+                      }
+                    }, timerController, _menuState.showProgress),
                   ],
                 ),
             ),
