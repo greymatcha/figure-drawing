@@ -74,7 +74,6 @@ class _HomeTabSessionWidget extends State<HomeTabSessionWidget> {
     return Center(
       child: Column(
         children: [
-          const SizedBox(height: 24),
           widget.hasSelectedFolders ?
           Text('Found ${widget.imagePaths.length.toString()} images in "${widget.folderName}"') :
           const Text("Supported image types: jpg, png, webp, gif"),
@@ -110,16 +109,14 @@ class _HomeTabSessionWidget extends State<HomeTabSessionWidget> {
             ),
 
           const SizedBox(height: 24),
-          Column(
-            children: [
-              ElevatedButton(
-                child: const Text("Start"),
-                onPressed: () {
-                  widget.startSession(null, session);
-                },
-              ),
-              const SizedBox(height: 32),
-            ],
+          ElevatedButton(
+            onPressed: () {
+              widget.startSession(null, session);
+            },
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size.fromHeight(50)
+            ),
+            child: const Text("Start"),
           ),
         ]
       ),

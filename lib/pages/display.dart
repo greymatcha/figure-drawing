@@ -305,12 +305,11 @@ class _DisplayPageState extends State<DisplayPage> {
                         ),
                       ],
                     ),
-                    _menuState.showProgress ?
-                      ProgressIndicatorWidget(() {
-                        if (_currentImageIndex < widget.imagePaths.length - 1) {
-                          goToNextImage();
-                        }
-                      }, timerController) : const SizedBox(),
+                    ProgressIndicatorWidget(() {
+                      if (_currentImageIndex < widget.imagePaths.length - 1) {
+                        goToNextImage();
+                      }
+                    }, timerController, _menuState.showProgress),
                   ],
                 ),
             ),

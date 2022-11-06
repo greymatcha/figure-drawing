@@ -40,14 +40,8 @@ class _CreateSessionPage extends State<CreateSessionPage> {
       setState(() {
         if (existingIndex != null) {
           session.items[existingIndex] = resultSessionItem;
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Session item updated"))
-          );
         } else {
           session.items.add(resultSessionItem);
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Session item added"))
-          );
         }
       });
     }
@@ -66,6 +60,10 @@ class _CreateSessionPage extends State<CreateSessionPage> {
             onPressed: () {
               if (_formKey.currentState!.validate() && session.items.isNotEmpty) {
                 popNavigator(cancel: false);
+              } else if (session.items.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Please add some session items"))
+                );
               }
             },
             child: const Text('Save'),
@@ -142,7 +140,14 @@ class _CreateSessionPage extends State<CreateSessionPage> {
                                     session.items.removeAt(index);
                                   });
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text("Session item removed"))
+                                    SnackBar(
+                                      content: const Text("Session item removed"),
+                                      action: SnackBarAction(label: "Undo", onPressed: () {
+                                        setState(() {
+                                          session.items.insert(index, sessionItem);
+                                        });
+                                      })
+                                    )
                                   );
                                 }, icon: const Icon(Icons.delete_outline)),
                                 const SizedBox(width: 32),
