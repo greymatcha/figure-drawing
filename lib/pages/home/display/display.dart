@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:io' as io;
-import 'dart:async' as async;
 
 import 'package:figure_drawing/classes.dart' as classes;
-import 'package:figure_drawing/widgets/display/progress_indicator.dart';
+import 'package:figure_drawing/widgets/home/display/progress_indicator.dart';
+import 'package:figure_drawing/pages/home/display/session_end.dart';
 
 class MenuState {
   bool fileInfo;
@@ -33,10 +33,13 @@ class DisplayPage extends StatefulWidget {
 class _DisplayPageState extends State<DisplayPage> {
   int _currentImageIndex = 0;
   int _imageIndexPreviousSessions = 0;
-  late int _start = widget.session.items[0].timeAmount;
   int _currentSessionItemIndex = 0;
   bool isPaused = false;
   late bool _inBreak = (widget.session.items[0].type == classes.SessionItemType.pause) ? true : false;
+  late List<Image> images = widget.imagePaths.map((imagePath) => Image.file(
+    io.File(imagePath),
+    fit: BoxFit.contain
+  )).toList();
 
   final classes.TimerController timerController = classes.TimerController();
 
@@ -62,7 +65,6 @@ class _DisplayPageState extends State<DisplayPage> {
   void goToNextSession() {
     classes.SessionItemComplete previousSessionItem = widget.session.items[_currentSessionItemIndex];
     _currentSessionItemIndex += 1;
-    _start = currentSessionTimeAmount();
     _inBreak = (widget.session.items[_currentSessionItemIndex].type == classes.SessionItemType.pause) ? true : false;
     _imageIndexPreviousSessions += previousSessionItem.imageAmount;
   }
@@ -70,7 +72,6 @@ class _DisplayPageState extends State<DisplayPage> {
   // Should only be called inside of setState()
   void goToPreviousSession() {
     _currentSessionItemIndex -= 1;
-    _start = currentSessionTimeAmount();
     _inBreak = (widget.session.items[_currentSessionItemIndex].type == classes.SessionItemType.pause) ? true : false;
     _imageIndexPreviousSessions -= widget.session.items[_currentSessionItemIndex].imageAmount;
   }
@@ -81,7 +82,7 @@ class _DisplayPageState extends State<DisplayPage> {
 
   void goToNextImage() {
     if (_currentImageIndex >= widget.imagePaths.length - 1) {
-      // TODO: Support case where there are no images left
+      navigateToSessionEndScreen(false);
       return;
     }
 
@@ -97,29 +98,36 @@ class _DisplayPageState extends State<DisplayPage> {
       if (canGoToNextSession()) {
         setState(() {
           goToNextSession();
-          if (!_inBreak && _currentSessionItemIndex > 1) {
+          if (!_inBreak &&
+              // Case for when the first session item is a pause
+              !(
+                widget.session.items[_currentSessionItemIndex - 1].type == classes.SessionItemType.pause &&
+                _currentSessionItemIndex == 1
+              )
+          ) {
             _currentImageIndex += 1;
           }
         });
+        precacheImages();
         timerController.reset(widget.session.items[_currentSessionItemIndex].timeAmount);
       } else {
-        // TODO: Handle case where we have ended the last session
+        navigateToSessionEndScreen(true);
       }
     // We are in the middle of a drawing session, go to the next image like normal
     } else {
       setState(() {
         _currentImageIndex += 1;
-        _start = currentSessionTimeAmount();
       });
+      precacheImages();
       timerController.reset(widget.session.items[_currentSessionItemIndex].timeAmount);
     }
   }
 
   void goToPreviousImage() {
-    if (_currentImageIndex <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("This is the first image"))
-      );
+    if (_currentImageIndex <= 0 &&
+        // Case for when the first session item is a break
+        !(_currentSessionItemIndex == 1 && widget.session.items[_currentSessionItemIndex - 1].type == classes.SessionItemType.pause)
+    ) {
       return;
     }
 
@@ -129,20 +137,51 @@ class _DisplayPageState extends State<DisplayPage> {
     ) {
       if (canGoToPreviousSession()) {
         setState(() {
-          if (!_inBreak) {
+          if (!_inBreak && _currentImageIndex > 0) {
             _currentImageIndex -= 1;
           }
           goToPreviousSession();
         });
+        precacheImages();
         timerController.reset(widget.session.items[_currentSessionItemIndex].timeAmount);
       }
     } else {
       setState(() {
         _currentImageIndex -= 1;
-        _start = currentSessionTimeAmount();
       });
+      precacheImages();
       timerController.reset(widget.session.items[_currentSessionItemIndex].timeAmount);
     }
+  }
+
+  void precacheImages() {
+    if (_currentImageIndex > 0) {
+      precacheImage(images[_currentImageIndex - 1].image, context);
+    }
+
+    if (_currentImageIndex < widget.imagePaths.length - 1) {
+      precacheImage(images[_currentImageIndex + 1].image, context);
+    }
+  }
+
+  void navigateToSessionEndScreen(sessionEnded) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SessionEndPage(
+          sessionEnded,
+          widget.imagePaths,
+          widget.session,
+          _currentImageIndex,
+          _currentSessionItemIndex,
+      ))
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    precacheImages();
   }
 
   @override
@@ -250,22 +289,21 @@ class _DisplayPageState extends State<DisplayPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(
-                            child: Transform.scale(
-                                scaleX: _menuState.flipImage ? -1 : 1,
-                                child: ColorFiltered(
-                                    colorFilter:
-                                    ColorFilter.mode(
-                                        _menuState.blackWhite ? Colors.grey : Colors.transparent,
-                                        BlendMode.saturation
-                                    ),
-                                    child: _inBreak ? const Text("BREAK") : Image.file(
-                                      io.File(widget.imagePaths[_currentImageIndex]),
-                                      fit: BoxFit.contain,
-                                    )
-                                )
-                            ),
-                          )
+                          _inBreak ?
+                            const Text("BREAK") :
+                            Expanded(
+                              child: Transform.scale(
+                                  scaleX: _menuState.flipImage ? -1 : 1,
+                                  child: ColorFiltered(
+                                      colorFilter:
+                                      ColorFilter.mode(
+                                          _menuState.blackWhite ? Colors.grey : Colors.transparent,
+                                          BlendMode.saturation
+                                      ),
+                                      child: images[_currentImageIndex]
+                                  )
+                              ),
+                            )
                         ],
                       ),
                     ),
@@ -289,12 +327,11 @@ class _DisplayPageState extends State<DisplayPage> {
                         ),
                       ],
                     ),
-                    _menuState.showProgress ?
-                      ProgressIndicatorWidget(() {
-                        if (_currentImageIndex < widget.imagePaths.length - 1) {
-                          goToNextImage();
-                        }
-                      }, timerController) : const SizedBox(),
+                    ProgressIndicatorWidget(() {
+                      if (_currentImageIndex < widget.imagePaths.length - 1) {
+                        goToNextImage();
+                      }
+                    }, timerController, _menuState.showProgress),
                   ],
                 ),
             ),

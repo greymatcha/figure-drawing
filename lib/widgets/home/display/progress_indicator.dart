@@ -4,28 +4,23 @@ import 'package:figure_drawing/classes.dart' as classes;
 
 class ProgressIndicatorWidget extends StatefulWidget {
   final Function onFinished;
-
-final classes.TimerController timerController;
+  final classes.TimerController timerController;
+  final bool visible;
 
   const ProgressIndicatorWidget(
       this.onFinished,
       this.timerController,
+      this.visible,
       { super.key }
     );
 
   @override
-  State<ProgressIndicatorWidget> createState() => _ProgressIndicatorWidget(timerController);
+  State<ProgressIndicatorWidget> createState() => _ProgressIndicatorWidget();
 }
 
 class _ProgressIndicatorWidget extends State<ProgressIndicatorWidget> with TickerProviderStateMixin {
   AnimationController? controller;
   int durationAmount = 0;
-
-  _ProgressIndicatorWidget(classes.TimerController timerController) {
-    timerController.pause = pause;
-    timerController.play = play;
-    timerController.reset = reset;
-  }
 
   void reset(int newDurationAmount) {
     setState(() {
@@ -66,6 +61,15 @@ class _ProgressIndicatorWidget extends State<ProgressIndicatorWidget> with Ticke
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+
+    widget.timerController.pause = pause;
+    widget.timerController.play = play;
+    widget.timerController.reset = reset;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +84,7 @@ class _ProgressIndicatorWidget extends State<ProgressIndicatorWidget> with Ticke
     // }
 
 
-    return controller != null ? Column(
+    return controller != null && widget.visible ? Column(
       children: [
         /* Code for if we want to add a linear progress indicator */
         // LinearProgressIndicator(

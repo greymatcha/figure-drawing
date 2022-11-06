@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:figure_drawing/classes.dart' as classes;
-import 'package:figure_drawing/pages/create_session.dart';
+import 'package:figure_drawing/pages/home/select_session/create_session.dart';
 import 'package:figure_drawing/utilities/session_management.dart';
 import 'package:figure_drawing/widgets/home/session_row.dart';
 
@@ -30,13 +30,10 @@ class _SelectSessionPage extends State<SelectSessionPage> {
       setState(() {
         if (existingIndex != null) {
           sessionStorageData.sessions[existingIndex] = resultSession;
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Session updated"))
-          );
         } else {
           sessionStorageData.sessions.add(resultSession);
           ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Session saved"))
+              const SnackBar(content: Text("Session created"))
           );
         }
       });

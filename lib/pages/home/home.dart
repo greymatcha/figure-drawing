@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 
-import 'package:figure_drawing/pages/display.dart';
-import 'package:figure_drawing/utilities/image_loading.dart';
+import 'package:figure_drawing/pages/home/display/display.dart';
 import 'package:figure_drawing/classes.dart' as classes;
 import 'package:figure_drawing/widgets/home/tab_simple.dart';
 import 'package:figure_drawing/widgets/home/tab_session.dart';
@@ -15,25 +13,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<String> imagePaths = [];
-  String folderName = "";
-  bool hasSelectedFolders = false;
-
-  void selectImages() async {
-    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-    if (selectedDirectory != null) {
-      setState(() {
-        imagePaths = getImagesInDirectoryRecursive(selectedDirectory);
-        folderName = selectedDirectory;
-        if (imagePaths.isNotEmpty) {
-          hasSelectedFolders = true;
-        }
-      });
-    }
-  }
+  classes.FolderSelectController folderSelectController = classes.FolderSelectController();
 
   void startSession(int? timerValue, classes.Session? session) {
-    if (hasSelectedFolders) {
+    List<String> imagePaths = folderSelectController.getImagePaths();
+    if (imagePaths.isNotEmpty) {
       late classes.Session sessionToUse;
       if (timerValue != null) {
         sessionToUse = classes.Session(
@@ -105,21 +89,15 @@ class _HomePageState extends State<HomePage> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
                 child: HomeTabSimpleWidget(
-                    hasSelectedFolders,
-                    imagePaths,
-                    folderName,
-                    selectImages,
                     startSession,
+                    folderSelectController,
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
                 child: HomeTabSessionWidget(
-                    hasSelectedFolders,
-                    imagePaths,
-                    folderName,
-                    selectImages,
-                    startSession
+                    startSession,
+                    folderSelectController,
                 ),
               )
           ]
