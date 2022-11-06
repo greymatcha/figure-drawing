@@ -3,6 +3,7 @@ import 'dart:io' as io;
 
 import 'package:figure_drawing/classes.dart' as classes;
 import 'package:figure_drawing/widgets/home/display/progress_indicator.dart';
+import 'package:figure_drawing/pages/home/display/session_end.dart';
 
 class MenuState {
   bool fileInfo;
@@ -81,7 +82,7 @@ class _DisplayPageState extends State<DisplayPage> {
 
   void goToNextImage() {
     if (_currentImageIndex >= widget.imagePaths.length - 1) {
-      // TODO: Support case where there are no images left
+      navigateToSessionEndScreen(false);
       return;
     }
 
@@ -110,7 +111,7 @@ class _DisplayPageState extends State<DisplayPage> {
         precacheImages();
         timerController.reset(widget.session.items[_currentSessionItemIndex].timeAmount);
       } else {
-        // TODO: Handle case where we have ended the last session
+        navigateToSessionEndScreen(true);
       }
     // We are in the middle of a drawing session, go to the next image like normal
     } else {
@@ -161,6 +162,19 @@ class _DisplayPageState extends State<DisplayPage> {
     if (_currentImageIndex < widget.imagePaths.length - 1) {
       precacheImage(images[_currentImageIndex + 1].image, context);
     }
+  }
+
+  void navigateToSessionEndScreen(sessionEnded) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SessionEndPage(
+          sessionEnded,
+          widget.imagePaths,
+          widget.session,
+          _currentImageIndex,
+          _currentSessionItemIndex,
+      ))
+    );
   }
 
   @override
