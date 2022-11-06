@@ -79,17 +79,33 @@ class _ProgressIndicatorWidget extends State<ProgressIndicatorWidget> with Ticke
     }
 
 
-    return controller != null ? Row(
+    return controller != null ? Column(
       children: [
-        Expanded(child: LinearProgressIndicator(
+        LinearProgressIndicator(
           value: controller!.value,
           semanticsLabel: 'Linear progress indicator',
-        )),
-        Text(
-          timerText,
-          style: TextStyle(
-            color: Colors.white,
-          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                decoration: BoxDecoration(
+                    color: Colors.grey[800],
+                  borderRadius: BorderRadius.circular(20)
+                ),
+                child: Text(
+                  timerText,
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              )
+            )
+
+          ],
         )
       ],
     ) : const SizedBox();
