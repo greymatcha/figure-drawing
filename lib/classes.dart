@@ -78,3 +78,9 @@ class SessionStorageData {
     "lastActive": lastActive ?? "" // Set it to an empty string if it is null
   };
 }
+
+class TimerController {
+  late void Function() pause;
+  late void Function() play;
+  late void Function(int) reset;
+}
