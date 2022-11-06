@@ -34,6 +34,8 @@ class _HomeTabSessionWidget extends State<HomeTabSessionWidget> {
       setState(() {
         session = resultSession;
       });
+    } else {
+      doLoadSessionStorageData();
     }
   }
 
@@ -51,9 +53,7 @@ class _HomeTabSessionWidget extends State<HomeTabSessionWidget> {
 
     setState(() {
       hasLoadedSessionStorageDataFile = true;
-      if (lastActiveSession != null) {
-        session = lastActiveSession;
-      }
+      session = lastActiveSession;
     });
   }
 
@@ -63,6 +63,7 @@ class _HomeTabSessionWidget extends State<HomeTabSessionWidget> {
 
     doLoadSessionStorageData();
   }
+
 
   @override
   Widget build(BuildContext context) {
