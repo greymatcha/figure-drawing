@@ -10,11 +10,11 @@ class MenuState {
   bool showGrid;
   bool flipImage;
   bool blackWhite;
-  bool showTimer;
+  bool showProgress;
 
-  MenuState(this.fileInfo, this.showGrid, this.flipImage, this.blackWhite, this.showTimer);
+  MenuState(this.fileInfo, this.showGrid, this.flipImage, this.blackWhite, this.showProgress);
 }
-enum MenuItems { fileInfo, showGrid, flipImage, blackWhite, showTimer }
+enum MenuItems { fileInfo, showGrid, flipImage, blackWhite, showProgress }
 
 class DisplayPage extends StatefulWidget {
   final List<String> imagePaths;
@@ -183,8 +183,8 @@ class _DisplayPageState extends State<DisplayPage> {
                   }
                   break;
 
-                  case MenuItems.showTimer: {
-                    _menuState.showTimer = !_menuState.showTimer;
+                  case MenuItems.showProgress: {
+                    _menuState.showProgress = !_menuState.showProgress;
                   }
                   break;
                 }
@@ -222,12 +222,12 @@ class _DisplayPageState extends State<DisplayPage> {
                   )
               ),
               PopupMenuItem<MenuItems>(
-                  value: MenuItems.showTimer,
+                  value: MenuItems.showProgress,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      const Text('Show timer'),
-                      _menuState.showTimer ?
+                      const Text('Show progress'),
+                      _menuState.showProgress ?
                       const Icon(
                           Icons.check,
                           color: Colors.black
@@ -289,11 +289,12 @@ class _DisplayPageState extends State<DisplayPage> {
                         ),
                       ],
                     ),
-                    ProgressIndicatorWidget(() {
-                      if (_currentImageIndex < widget.imagePaths.length - 1) {
-                        goToNextImage();
-                      }
-                    }, timerController),
+                    _menuState.showProgress ?
+                      ProgressIndicatorWidget(() {
+                        if (_currentImageIndex < widget.imagePaths.length - 1) {
+                          goToNextImage();
+                        }
+                      }, timerController) : const SizedBox(),
                   ],
                 ),
             ),
