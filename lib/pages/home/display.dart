@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:io' as io;
 
 import 'package:figure_drawing/classes.dart' as classes;
-import 'package:figure_drawing/widgets/display/progress_indicator.dart';
+import 'package:figure_drawing/widgets/home/display/progress_indicator.dart';
 
 class MenuState {
   bool fileInfo;
