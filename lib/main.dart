@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:figure_drawing/pages/home.dart';
+import 'package:figure_drawing/pages/home/home.dart';
 
 void main() {
   runApp(const FigureDrawingApp());

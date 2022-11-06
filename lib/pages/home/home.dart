@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
-import 'package:figure_drawing/pages/display.dart';
+import 'package:figure_drawing/pages/home/display.dart';
 import 'package:figure_drawing/utilities/image_loading.dart';
 import 'package:figure_drawing/classes.dart' as classes;
 import 'package:figure_drawing/widgets/home/tab_simple.dart';

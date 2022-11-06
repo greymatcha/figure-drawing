@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:figure_drawing/classes.dart' as classes;
-import 'package:figure_drawing/pages/create_session_item.dart';
+import 'package:figure_drawing/pages/home/select_session/create_session_item.dart';
 
 class CreateSessionPage extends StatefulWidget {
   final classes.Session session;

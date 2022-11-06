@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:figure_drawing/classes.dart' as classes;
-import 'package:figure_drawing/pages/select_session.dart';
+import 'package:figure_drawing/pages/home/select_session/select_session.dart';
 import 'package:figure_drawing/utilities/session_management.dart';
 import 'package:figure_drawing/widgets/home/session_row.dart';
 
