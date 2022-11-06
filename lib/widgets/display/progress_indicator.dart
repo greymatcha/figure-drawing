@@ -19,6 +19,7 @@ final classes.TimerController timerController;
 
 class _ProgressIndicatorWidget extends State<ProgressIndicatorWidget> with TickerProviderStateMixin {
   AnimationController? controller;
+  int durationAmount = 0;
 
   _ProgressIndicatorWidget(classes.TimerController timerController) {
     timerController.pause = pause;
@@ -26,17 +27,19 @@ class _ProgressIndicatorWidget extends State<ProgressIndicatorWidget> with Ticke
     timerController.reset = reset;
   }
 
-  void reset(int durationAmount) {
+  void reset(int newDurationAmount) {
     setState(() {
       if (controller != null) {
         controller!.dispose();
       }
       controller = AnimationController(
         vsync: this,
-        duration: Duration(seconds: durationAmount),
+        duration: Duration(seconds: newDurationAmount),
       )..addListener(() {
         setState(() {});
       });
+
+      durationAmount = newDurationAmount;
     });
     play();
   }
@@ -51,7 +54,6 @@ class _ProgressIndicatorWidget extends State<ProgressIndicatorWidget> with Ticke
   void play() {
     setState(() {
       controller!.forward().then((value) {
-        print("lol");
         widget.onFinished();
       });
     });
@@ -67,9 +69,29 @@ class _ProgressIndicatorWidget extends State<ProgressIndicatorWidget> with Ticke
 
   @override
   Widget build(BuildContext context) {
-    return controller != null ? LinearProgressIndicator(
-      value: controller!.value,
-      semanticsLabel: 'Linear progress indicator',
+    Duration? timer;
+    String timerText = "";
+    if (controller != null) {
+      timer = Duration(seconds: (controller!.value * durationAmount).toInt());
+      String minutes = (Duration(seconds: durationAmount).inMinutes - timer.inMinutes.remainder(durationAmount)).toString().padLeft(2, "0");
+      String seconds = ((durationAmount - timer.inSeconds.remainder(durationAmount)) % 60).toString().padLeft(2, "0");
+      timerText = '$minutes:$seconds';
+    }
+
+
+    return controller != null ? Row(
+      children: [
+        Expanded(child: LinearProgressIndicator(
+          value: controller!.value,
+          semanticsLabel: 'Linear progress indicator',
+        )),
+        Text(
+          timerText,
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        )
+      ],
     ) : const SizedBox();
   }
 }
