@@ -97,7 +97,13 @@ class _DisplayPageState extends State<DisplayPage> {
       if (canGoToNextSession()) {
         setState(() {
           goToNextSession();
-          if (!_inBreak && _currentSessionItemIndex > 1) {
+          if (!_inBreak &&
+              // Case for when the first session item is a pause
+              !(
+                widget.session.items[_currentSessionItemIndex - 1].type == classes.SessionItemType.pause &&
+                _currentSessionItemIndex == 1
+              )
+          ) {
             _currentImageIndex += 1;
           }
         });
@@ -117,10 +123,10 @@ class _DisplayPageState extends State<DisplayPage> {
   }
 
   void goToPreviousImage() {
-    if (_currentImageIndex <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("This is the first image"))
-      );
+    if (_currentImageIndex <= 0 &&
+        // Case for when the first session item is a break
+        !(_currentSessionItemIndex == 1 && widget.session.items[_currentSessionItemIndex - 1].type == classes.SessionItemType.pause)
+    ) {
       return;
     }
 
@@ -130,7 +136,7 @@ class _DisplayPageState extends State<DisplayPage> {
     ) {
       if (canGoToPreviousSession()) {
         setState(() {
-          if (!_inBreak) {
+          if (!_inBreak && _currentImageIndex > 0) {
             _currentImageIndex -= 1;
           }
           goToPreviousSession();
@@ -269,19 +275,21 @@ class _DisplayPageState extends State<DisplayPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(
-                            child: Transform.scale(
-                                scaleX: _menuState.flipImage ? -1 : 1,
-                                child: ColorFiltered(
-                                    colorFilter:
-                                    ColorFilter.mode(
-                                        _menuState.blackWhite ? Colors.grey : Colors.transparent,
-                                        BlendMode.saturation
-                                    ),
-                                    child: _inBreak ? const Text("BREAK") : images[_currentImageIndex]
-                                )
-                            ),
-                          )
+                          _inBreak ?
+                            const Text("BREAK") :
+                            Expanded(
+                              child: Transform.scale(
+                                  scaleX: _menuState.flipImage ? -1 : 1,
+                                  child: ColorFiltered(
+                                      colorFilter:
+                                      ColorFilter.mode(
+                                          _menuState.blackWhite ? Colors.grey : Colors.transparent,
+                                          BlendMode.saturation
+                                      ),
+                                      child: images[_currentImageIndex]
+                                  )
+                              ),
+                            )
                         ],
                       ),
                     ),
