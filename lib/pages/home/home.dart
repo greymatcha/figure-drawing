@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:figure_drawing/pages/home/display.dart';
+import 'package:figure_drawing/pages/home/display/display.dart';
 import 'package:figure_drawing/classes.dart' as classes;
 import 'package:figure_drawing/widgets/home/tab_simple.dart';
 import 'package:figure_drawing/widgets/home/tab_session.dart';
