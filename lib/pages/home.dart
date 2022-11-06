@@ -109,7 +109,7 @@ class _HomePageState extends State<HomePage> {
                     imagePaths,
                     folderName,
                     selectImages,
-                    startSession
+                    startSession,
                 ),
               ),
               Padding(
