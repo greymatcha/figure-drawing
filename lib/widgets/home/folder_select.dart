@@ -60,7 +60,7 @@ class _FolderSelectWidget extends State<FolderSelectWidget> {
         result = result.reversed.toList();
         break;
     }
-    
+
     return result;
   }
 
@@ -84,7 +84,8 @@ class _FolderSelectWidget extends State<FolderSelectWidget> {
                         selectedFolders.remove(key);
                       });
                     },
-                    icon: const Icon(Icons.delete)
+                    icon: const Icon(Icons.clear),
+                  tooltip: "Remove folder",
                 )
               ],
             )
@@ -114,7 +115,7 @@ class _FolderSelectWidget extends State<FolderSelectWidget> {
             IconButton(
               onPressed: addFolder,
               icon: const Icon(Icons.add),
-              tooltip: "Add a folder",
+              tooltip: "Add folder",
             )
           ],
         ),
