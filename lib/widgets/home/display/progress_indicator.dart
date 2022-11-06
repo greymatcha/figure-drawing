@@ -15,18 +15,12 @@ class ProgressIndicatorWidget extends StatefulWidget {
     );
 
   @override
-  State<ProgressIndicatorWidget> createState() => _ProgressIndicatorWidget(timerController);
+  State<ProgressIndicatorWidget> createState() => _ProgressIndicatorWidget();
 }
 
 class _ProgressIndicatorWidget extends State<ProgressIndicatorWidget> with TickerProviderStateMixin {
   AnimationController? controller;
   int durationAmount = 0;
-
-  _ProgressIndicatorWidget(classes.TimerController timerController) {
-    timerController.pause = pause;
-    timerController.play = play;
-    timerController.reset = reset;
-  }
 
   void reset(int newDurationAmount) {
     setState(() {
@@ -65,6 +59,15 @@ class _ProgressIndicatorWidget extends State<ProgressIndicatorWidget> with Ticke
   void dispose() {
     controller!.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    widget.timerController.pause = pause;
+    widget.timerController.play = play;
+    widget.timerController.reset = reset;
   }
 
 

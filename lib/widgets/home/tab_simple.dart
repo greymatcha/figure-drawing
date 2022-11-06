@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:figure_drawing/classes.dart' as classes;
+import 'package:figure_drawing/widgets/home/folder_select.dart';
 
 const List<Map<String, Object>> timerDropdownOptions = [
   { "label": "2s", "value": 2 },
@@ -13,18 +14,12 @@ const List<Map<String, Object>> timerDropdownOptions = [
 ];
 
 class HomeTabSimpleWidget extends StatefulWidget {
-  final bool hasSelectedFolders;
-  final List<String> imagePaths;
-  final String folderName;
-  final VoidCallback selectImages;
   final Function(int?, classes.Session?) startSession;
+  final classes.FolderSelectController folderSelectController;
 
   const HomeTabSimpleWidget(
-      this.hasSelectedFolders,
-      this.imagePaths,
-      this.folderName,
-      this.selectImages,
       this.startSession,
+      this.folderSelectController,
       {super.key}
       );
 
@@ -33,32 +28,18 @@ class HomeTabSimpleWidget extends StatefulWidget {
 }
 
 class _HomeTabSimpleWidget extends State<HomeTabSimpleWidget> {
-
   int timerValue = 30;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        widget.hasSelectedFolders ?
-        Text('Found ${widget.imagePaths.length.toString()} images in "${widget.folderName}"') :
-        const Text("Supported image types: jpg, png, webp, gif"),
-        const SizedBox(height: 12),
-        ElevatedButton(
-          onPressed: widget.selectImages,
-          child: Text((() {
-            if (widget.hasSelectedFolders) {
-              return 'Select a different folder';
-            } else {
-              return 'Select a folder';
-            }
-          }())),
-        ),
+        FolderSelectWidget(widget.folderSelectController),
         const SizedBox(height: 12),
         Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              const Text('Time per image:'),
+              const Text('Time per image'),
               const SizedBox(width: 10),
               DropdownButton(
                 value: timerValue,

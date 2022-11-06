@@ -84,3 +84,7 @@ class TimerController {
   late void Function() play;
   late void Function(int) reset;
 }
+
+class FolderSelectController {
+  late List<String> Function() getImagePaths;
+}

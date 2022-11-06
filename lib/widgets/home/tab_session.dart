@@ -4,20 +4,15 @@ import 'package:figure_drawing/classes.dart' as classes;
 import 'package:figure_drawing/pages/home/select_session/select_session.dart';
 import 'package:figure_drawing/utilities/session_management.dart';
 import 'package:figure_drawing/widgets/home/session_row.dart';
+import 'package:figure_drawing/widgets/home/folder_select.dart';
 
 class HomeTabSessionWidget extends StatefulWidget {
-  final bool hasSelectedFolders;
-  final List<String> imagePaths;
-  final String folderName;
-  final VoidCallback selectImages;
   final Function(int?, classes.Session?) startSession;
+  final classes.FolderSelectController folderSelectController;
 
   const HomeTabSessionWidget(
-      this.hasSelectedFolders,
-      this.imagePaths,
-      this.folderName,
-      this.selectImages,
       this.startSession,
+      this.folderSelectController,
       {super.key}
       );
 
@@ -74,20 +69,7 @@ class _HomeTabSessionWidget extends State<HomeTabSessionWidget> {
     return Center(
       child: Column(
         children: [
-          widget.hasSelectedFolders ?
-          Text('Found ${widget.imagePaths.length.toString()} images in "${widget.folderName}"') :
-          const Text("Supported image types: jpg, png, webp, gif"),
-          const SizedBox(height: 10),
-          ElevatedButton(
-              onPressed: widget.selectImages,
-              child: Text((() {
-                if (widget.hasSelectedFolders) {
-                  return 'Select a different folder';
-                } else {
-                  return 'Select a folder';
-                }
-              }()))
-          ),
+          FolderSelectWidget(widget.folderSelectController),
           const SizedBox(height: 24),
 
           Row(
