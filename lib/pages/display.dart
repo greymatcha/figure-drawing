@@ -243,35 +243,34 @@ class _DisplayPageState extends State<DisplayPage> {
       body: Center(
         child: Column (
           children: <Widget>[
-            ProgressIndicatorWidget(() {
-              if (_currentImageIndex < widget.imagePaths.length - 1) {
-                goToNextImage();
-              }
-            }, timerController),
             Expanded(
                 child: Stack(
                   children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Transform.scale(
-                              scaleX: _menuState.flipImage ? -1 : 1,
-                              child: ColorFiltered(
-                                  colorFilter:
-                                  ColorFilter.mode(
-                                      _menuState.blackWhite ? Colors.grey : Colors.transparent,
-                                      BlendMode.saturation
-                                  ),
-                                  child: _inBreak ? const Text("BREAK") : Image.file(
-                                    io.File(widget.imagePaths[_currentImageIndex]),
-                                    fit: BoxFit.contain,
-                                  )
-                              )
-                          ),
-                        )
-                      ],
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Transform.scale(
+                                scaleX: _menuState.flipImage ? -1 : 1,
+                                child: ColorFiltered(
+                                    colorFilter:
+                                    ColorFilter.mode(
+                                        _menuState.blackWhite ? Colors.grey : Colors.transparent,
+                                        BlendMode.saturation
+                                    ),
+                                    child: _inBreak ? const Text("BREAK") : Image.file(
+                                      io.File(widget.imagePaths[_currentImageIndex]),
+                                      fit: BoxFit.contain,
+                                    )
+                                )
+                            ),
+                          )
+                        ],
+                      ),
                     ),
+
+
                     Row(
                       children: [
                         Expanded(
@@ -290,13 +289,11 @@ class _DisplayPageState extends State<DisplayPage> {
                         ),
                       ],
                     ),
-                    Positioned(
-                      top: 12,
-                      right: 12,
-                      child: _menuState.showTimer ?
-                        Text("$_start") :
-                        const SizedBox.shrink(),
-                    ),
+                    ProgressIndicatorWidget(() {
+                      if (_currentImageIndex < widget.imagePaths.length - 1) {
+                        goToNextImage();
+                      }
+                    }, timerController),
                   ],
                 ),
             ),
