@@ -69,44 +69,64 @@ class _ProgressIndicatorWidget extends State<ProgressIndicatorWidget> with Ticke
 
   @override
   Widget build(BuildContext context) {
-    Duration? timer;
-    String timerText = "";
-    if (controller != null) {
-      timer = Duration(seconds: (controller!.value * durationAmount).toInt());
-      String minutes = (Duration(seconds: durationAmount).inMinutes - timer.inMinutes.remainder(durationAmount)).toString().padLeft(2, "0");
-      String seconds = ((durationAmount - timer.inSeconds.remainder(durationAmount)) % 60).toString().padLeft(2, "0");
-      timerText = '$minutes:$seconds';
-    }
+    /* Code for if we want to add a countdown timer */
+    // Duration? timer;
+    // String timerText = "";
+    // if (controller != null) {
+    //   timer = Duration(seconds: (controller!.value * durationAmount).toInt());
+    //   String minutes = (Duration(seconds: durationAmount).inMinutes - timer.inMinutes.remainder(durationAmount)).toString().padLeft(2, "0");
+    //   String seconds = ((durationAmount - timer.inSeconds.remainder(durationAmount)) % 60).toString().padLeft(2, "0");
+    //   timerText = '$minutes:$seconds';
+    // }
 
 
     return controller != null ? Column(
       children: [
-        LinearProgressIndicator(
-          value: controller!.value,
-          semanticsLabel: 'Linear progress indicator',
-        ),
+        /* Code for if we want to add a linear progress indicator */
+        // LinearProgressIndicator(
+        //   value: controller!.value,
+        //   semanticsLabel: 'Linear progress indicator',
+        // ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                decoration: BoxDecoration(
-                    color: Colors.grey[800],
-                  borderRadius: BorderRadius.circular(20)
-                ),
-                child: Text(
-                  timerText,
-                  style: const TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
+              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+              child: SizedBox(
+                height: 30,
+                width: 30,
+                child: CircularProgressIndicator(
+                  value: controller!.value,
+                  semanticsLabel: 'Image progress',
+                  backgroundColor: Colors.grey[800],
+                ))
               )
-            )
-
           ],
-        )
+
+        ),
+        /* Code for if we want to add a countdown timer */
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.end,
+        //   children: [
+        //     Padding(
+        //       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+        //       child: Container(
+        //         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        //         decoration: BoxDecoration(
+        //             color: Colors.grey[800],
+        //           borderRadius: BorderRadius.circular(20)
+        //         ),
+        //         child: Text(
+        //           timerText,
+        //           style: const TextStyle(
+        //             color: Colors.white,
+        //           ),
+        //         ),
+        //       )
+        //     )
+        //
+        //   ],
+        // )
       ],
     ) : const SizedBox();
   }
