@@ -34,6 +34,8 @@ class _HomeTabSessionWidget extends State<HomeTabSessionWidget> {
       setState(() {
         session = resultSession;
       });
+    } else {
+      doLoadSessionStorageData();
     }
   }
 
@@ -51,9 +53,7 @@ class _HomeTabSessionWidget extends State<HomeTabSessionWidget> {
 
     setState(() {
       hasLoadedSessionStorageDataFile = true;
-      if (lastActiveSession != null) {
-        session = lastActiveSession;
-      }
+      session = lastActiveSession;
     });
   }
 
@@ -63,6 +63,7 @@ class _HomeTabSessionWidget extends State<HomeTabSessionWidget> {
 
     doLoadSessionStorageData();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +84,7 @@ class _HomeTabSessionWidget extends State<HomeTabSessionWidget> {
                 navigateSelectSessionPage(context)
               }, true
             ) : SessionRow(
-            classes.Session("1", "Select a session", []),
+            classes.Session("1", "Select a session", "", []),
               1, null, null,
                   () => {
                 navigateSelectSessionPage(context)
