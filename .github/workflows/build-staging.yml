@@ -1,0 +1,14 @@
+name: Build & upload binaries | Staging
+
+on:
+  push:
+    branches: [ develop ]
+  
+  workflow_dispatch:
+
+jobs:
+  build-application:
+    uses: greymatcha/figure-drawing/.github/workflows/build-template.yml@develop
+    with:
+      deploy_bucket: gm-figure-drawing-release-staging
+      create_artifacts: false
