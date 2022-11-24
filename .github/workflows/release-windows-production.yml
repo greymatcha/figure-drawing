@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -28,9 +31,14 @@ jobs:
       - name: Create an installer for the flutter application
         run: |
           D:\a\figure-drawing\inno-setup\ISCC.exe  /DMyAppVersion=${{ github.run_number }} 'D:\a\figure-drawing\figure-drawing\installer\windows_install_script.iss'
-      - name: Create a release with the installer as an artifact
-        uses: ncipollo/release-action@v1
+      - name: Authenticate GCS
+        id: 'auth'
+        uses: 'google-github-actions/auth@v1'
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: v0.${{ github.run_number }}
-          artifacts: "${{ github.workspace }}/installer/FigureDrawingInstaller.exe"
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_DEPLOY }}
+      - name: Upload installer
+        id: 'upload-file'
+        uses: 'google-github-actions/upload-cloud-storage@v1'
+        with:
+          path: '${{ github.workspace }}/installer/FigureDrawingInstaller.exe'
+          destination: 'gm-figure-drawing/exports/production/0.${{github.run_number}}/FigureDrawingInstaller.exe'
