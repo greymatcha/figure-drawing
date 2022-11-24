@@ -1,0 +1,58 @@
+name: Build & upload template
+on:
+  workflow_call:
+    inputs:
+      deploy_bucket:
+        required: true
+        type: string
+      create_artifacts:
+        required: true
+        type: boolean
+    secrets:
+      gcp_credentials:
+        required: true
+
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Authenticate GCS
+        id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: ${{ secrets.gcp_credentials }}
+      - name: Install flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'beta'
+      - name: Enable flutter windows desktop support
+        run: flutter config --enable-windows-desktop
+      - name: Build the flutter application for windows
+        run: flutter build windows
+      - name: Download Inno Setup
+        run: |
+          Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "D:\a\figure-drawing\is.exe"
+      - name: Install Inno Setup
+        run: |
+          D:\a\figure-drawing\is.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="D:\a\figure-drawing\inno-setup"
+      - name: Create an installer for the flutter application
+        run: |
+          D:\a\figure-drawing\inno-setup\ISCC.exe  /DMyAppVersion=${{ github.run_number }} 'D:\a\figure-drawing\figure-drawing\installer\windows_install_script.iss'
+      - name: Upload installer to CGS
+        id: 'upload-file'
+        uses: 'google-github-actions/upload-cloud-storage@v1'
+        with:
+          path: ${{ github.workspace }}/installer/FigureDrawingInstaller.exe
+          destination: ${{ inputs.deploy_bucket }}/0.${{github.run_number}}
+      - name: Create windows installer artifact
+        if: ${{ inputs.create_artifacts }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-installer
+          path: ${{ github.workspace }}/installer/FigureDrawingInstaller.exe
