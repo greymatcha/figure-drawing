@@ -1,0 +1,30 @@
+name: Build, upload & release binaries | Production
+
+on:
+  push:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build-application:
+    uses: greymatcha/figure-drawing/.github/workflows/build-template.yml@develop
+    with:
+      deploy_bucket: gm-figure-drawing-release-production
+      create_artifacts: true
+
+  download-artifacts-and-create-release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Download windows installer
+      uses: actions/download-artifact@v3
+      with:
+        name: windows-installer
+        path: ${{ github.workspace }}/installer/FigureDrawingInstaller.exe
+    - name: Create a release with the installer as an artifact
+      uses: ncipollo/release-action@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: v0.${{ github.run_number }}
+        artifacts: "${{ github.workspace }}/installer/FigureDrawingInstaller.exe"
