@@ -16,6 +16,7 @@ jobs:
       gcp_credentials: ${{ secrets.GCP_SERVICE_ACCOUNT_DEPLOY }}
 
   download-artifacts-and-create-release:
+    needs: build-application
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
