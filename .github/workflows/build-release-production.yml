@@ -12,6 +12,8 @@ jobs:
     with:
       deploy_bucket: gm-figure-drawing-release-production
       create_artifacts: true
+    secrets:
+      gcp_credentials: ${{ secrets.GCP_SERVICE_ACCOUNT_DEPLOY }}
 
   download-artifacts-and-create-release:
     runs-on: ubuntu-latest
