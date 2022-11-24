@@ -12,3 +12,5 @@ jobs:
     with:
       deploy_bucket: gm-figure-drawing-release-staging
       create_artifacts: false
+    secrets:
+      gcp_credentials: ${{ secrets.GCP_SERVICE_ACCOUNT_DEPLOY }}
