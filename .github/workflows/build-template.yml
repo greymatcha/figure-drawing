@@ -48,7 +48,7 @@ jobs:
           path: ${{ github.workspace }}/installer/FigureDrawingInstaller.exe
           destination: ${{ inputs.deploy_bucket }}/0.${{github.run_number}}/FigureDrawingInstaller.exe
       - name: Create windows installer artifact
-        if: create_artifacts
+        if: ${{ inputs.create_artifacts }}
         uses: actions/upload-artifact@v3
         with:
           name: windows-installer
